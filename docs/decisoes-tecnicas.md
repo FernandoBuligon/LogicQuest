@@ -5,3 +5,7 @@
 3. **Ambiente de execução.** Node não estava instalado no PATH; usar distribuição oficial LTS em `/tmp` para os comandos desta sessão, sem alterar instalações globais. Usuários precisam instalar Node LTS para executar o projeto.
 
 As próximas decisões serão registradas na etapa correspondente.
+
+4. **Stack conferida nas fontes oficiais e no npm.** React 19, Vite 8, TypeScript 7, XYFlow 12, Tailwind 4, Vitest 5; versões efetivamente resolvidas em `package-lock.json`. Tailwind usa `@tailwindcss/vite`, sem configuração antiga de PostCSS. Fontes: https://vite.dev/guide/, https://reactflow.dev/learn, https://tailwindcss.com/docs/installation/using-vite.
+5. **shadcn/ui mínimo.** Apenas Button adaptado do componente MIT, com Slot, CVA e composição de classes; sem instalar catálogo/CLI em runtime. Cards e feedback usam HTML semântico. Referência: https://ui.shadcn.com/docs/components/button.
+6. **Verificação de interface.** Playwright como dependência de desenvolvimento para exercitar editor e persistência em navegador real. Chromium desta sessão em `/tmp`; sem serviço remoto. Vitest continua responsável pelo domínio.

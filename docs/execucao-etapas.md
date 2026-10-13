@@ -43,3 +43,11 @@ Commit: `8cc8fdd` — 💄 feat: aplicar identidade visual e orientar a montagem
 ## Etapa 7 — Persistência e confiabilidade
 
 Concluída. Chave `logic-quest:progress:v1` guarda fases concluídas e última fase; recuperação valida versão/tipos/sequência e corrige retomada bloqueada. Dados ausentes/corrompidos e storage bloqueado/cheio não quebram o jogo; indisponibilidade é informada. Reiniciar fase limpa somente a montagem; reiniciar progresso confirma antes de apagar conquistas e rascunhos. Tipos, lint, 60 testes unitários, build e 8 testes Chromium passaram, incluindo reload, cancelamento de reset e navegação sem perder montagem. Próxima etapa: revisão geral de integração.
+
+Commit: `1bd5798` — ✨ feat: salvar progresso local e confirmar reinicialização.
+
+## Etapa 8 — Revisão geral
+
+Concluída. Percurso das seis fases no build de produção, com tentativa incompleta/incorreta/correta em cada fase e rede desligada após carregar a aplicação. Handles por arraste, movimentação, exclusão por teclado, nós fixos e remoção em cascata exercitados. Diálogo torna fundo inativo, mantém Tab no modal e restaura foco após cancelamento; controles do canvas traduzidos. Código provisório do editor removido. Capturas do menu, fase 5 e sucesso final revisadas visualmente. Roteiro de cinco minutos em `docs/demonstracao.md`.
+
+`npm ci` reinstalou 218 pacotes pelo lockfile; tipos, lint, 60 testes unitários, build e 11 testes Chromium passaram. A primeira instalação foi bloqueada pelo DNS do sandbox; a execução autorizada fora dele concluiu. Limitações: montagens apenas na sessão, progresso por navegador/origem, editor com zoom em telas pequenas, revisão em Chromium Linux (não certifica outros navegadores/leitores de tela). Próxima etapa: documentação acadêmica e slides.

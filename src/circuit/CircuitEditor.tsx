@@ -14,7 +14,7 @@ interface EditorProps {
   initialDraft?: Draft
   onDraftChange?: (draft: Draft) => void
   onBack: () => void
-  onTest?: (circuit: Circuit) => void
+  onTest: (circuit: Circuit) => void
 }
 
 export default function CircuitEditor({ rules, initialDraft, onDraftChange, onBack, onTest }: EditorProps) {
@@ -103,6 +103,12 @@ export default function CircuitEditor({ rules, initialDraft, onDraftChange, onBa
     </div>
     <div className="circuit-canvas">
       <ReactFlow nodes={nodes} edges={edges} nodeTypes={nodeTypes} onNodesChange={changeNodes}
+        ariaLabelConfig={{
+          'controls.zoomIn.ariaLabel': 'Aumentar zoom', 'controls.zoomOut.ariaLabel': 'Diminuir zoom',
+          'controls.fitView.ariaLabel': 'Enquadrar circuito', 'controls.ariaLabel': 'Controles do circuito',
+          'node.a11yDescription.default': 'Pressione Enter para selecionar, use as setas para mover uma porta e Delete para removê-la. Escape cancela a seleção.',
+          'edge.a11yDescription.default': 'Pressione Enter para selecionar o fio, Delete para remover e Escape para cancelar.',
+        }}
         onEdgesChange={changes => {
           for (const change of changes) {
             if (change.type === 'select') setSelection(current => ({ ...current, wires: change.selected ? [...current.wires.filter(id => id !== change.id), change.id] : current.wires.filter(id => id !== change.id) }))
@@ -137,10 +143,7 @@ export default function CircuitEditor({ rules, initialDraft, onDraftChange, onBa
       <ul className="wire-list">{draft.circuit.wires.map((wire, i) => <li key={wire.id}>Fio {i + 1} <Button size="sm" variant="ghost" onClick={() => update({ ...draft, circuit: { ...draft.circuit, wires: draft.circuit.wires.filter(item => item.id !== wire.id) } })} aria-label={`Remover fio ${i + 1}`}>Remover</Button></li>)}</ul>
       {draft.circuit.wires.length === 0 && <p>Nenhum fio conectado.</p>}
     </details>
-    <div className="editor-actions"><Button onClick={() => {
-      if (onTest) onTest(draft.circuit)
-      else setMessage(evaluation.ok ? 'Simulação concluída. A validação completa por fase será integrada na próxima etapa.' : evaluation.issues[0].message)
-    }}><FlaskConical size={18} />Testar circuito</Button>
+    <div className="editor-actions"><Button onClick={() => onTest(draft.circuit)}><FlaskConical size={18} />Testar circuito</Button>
       <Button variant="outline" onClick={() => { update(createDraft(rules.inputs)); setMessage('Circuito limpo. Adicione uma porta para começar novamente.') }}><RotateCcw size={16} />Reiniciar fase</Button></div>
   </section>
 }

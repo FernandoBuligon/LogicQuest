@@ -4,3 +4,31 @@
 body { margin: 0; min-width: 320px; }
 button, a { -webkit-tap-highlight-color: transparent; }
 :focus-visible { outline: 3px solid #67e8f9; outline-offset: 4px; }
+
+.editor-toolbar, .gate-palette, .editor-actions, .editor-status { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.editor-toolbar { margin-bottom: 16px; }
+.gate-count { color: #a9bacd; font-size: 14px; }
+.circuit-canvas { height: 540px; border: 1px solid #334155; border-radius: 16px; overflow: hidden; }
+.signal-node { position: relative; width: 150px; padding: 16px; border: 1px solid #52657e; border-radius: 12px; background: #152233; }
+.signal-node.selected { outline: 2px solid #67e8f9; }
+.signal-node[data-signal='1'] { border-color: #6ee7b7; }
+.node-caption { color: #afc0d2; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; }
+.node-body { display: flex; align-items: center; justify-content: space-between; margin-top: 8px; }
+.node-body strong { font-size: 20px; }
+.signal-value { border-radius: 6px; background: #25364d; padding: 4px 9px; font-family: monospace; }
+[data-signal='1'] .signal-value { background: #064e3b; color: #a7f3d0; }
+.toggle-input { margin-top: 8px; font-size: 11px; color: #67e8f9; cursor: pointer; }
+.remove-gate { position: absolute; right: 8px; top: 7px; padding: 5px; color: #cbd5e1; cursor: pointer; }
+.handle-labels span { position: absolute; left: 10px; transform: translateY(-50%); font-size: 9px; color: #94a3b8; }
+.signal-node.gate, .signal-node.output { padding-left: 25px; }
+.signal-node .react-flow__handle { width: 16px; height: 16px; background: #67e8f9; border: 3px solid #0b1420; }
+.editor-status { justify-content: space-between; padding: 14px 0; color: #a9bacd; font-size: 14px; }
+.editor-status strong { color: #67e8f9; font-size: 22px; }
+.connection-message { margin: 8px 0 16px; color: #cbd5e1; }
+.connection-tools { margin-bottom: 20px; background: #101e30; padding: 16px; border-radius: 12px; }
+summary { cursor: pointer; }
+.connection-form { display: flex; align-items: end; gap: 12px; flex-wrap: wrap; margin-top: 16px; }
+.connection-form label { display: grid; gap: 6px; font-size: 14px; }
+select { background: #0b1420; border: 1px solid #52657e; border-radius: 8px; padding: 10px; }
+.wire-list { display: flex; gap: 16px; flex-wrap: wrap; padding-top: 12px; }
+@media (max-width: 600px) { .circuit-canvas { height: 460px; } .connection-form label { width: 100%; } }

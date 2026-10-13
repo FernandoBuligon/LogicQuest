@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b1420">
+  <title>Logic Quest — apresentação</title>
+  <style>
+    :root { color-scheme: dark; font-family: ui-sans-serif, system-ui, sans-serif; color: #e5eef8; background: #0b1420; }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: radial-gradient(ellipse at 90% 0%, #183d4d88, transparent 65%); }
+    .deck { max-width: 1180px; margin: auto; padding: 40px; }
+    .slide { min-height: calc(100vh - 145px); padding: 40px 0 30px; }
+    [hidden] { display: none; }
+    .eyebrow { color: #67e8f9; text-transform: uppercase; letter-spacing: 2px; font-size: 12px; }
+    h1 { font-size: clamp(44px, 7vw, 84px); margin: 24px 0; letter-spacing: -3px; }
+    h2 { font-size: clamp(30px, 4vw, 48px); letter-spacing: -1.4px; line-height: 1.2; margin: 20px 0 28px; }
+    h1:focus, h2:focus { outline: none; }
+    h3 { margin: 0 0 14px; font-size: 20px; color: #a7f3d0; }
+    p, li { font-size: 20px; line-height: 1.6; color: #bdcddd; }
+    p { margin: 12px 0 20px; }
+    li { margin: 12px 0; }
+    .lead { max-width: 850px; font-size: 25px; }
+    .subtle { color: #9cb1c5; font-size: 15px; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+    .card { padding: 26px; background: #122438; border: 1px solid #304d63; border-radius: 16px; }
+    .card p, .card li { font-size: 18px; }
+    .card ul { padding-left: 24px; }
+    .callout { padding: 18px 24px; border-left: 3px solid #67e8f9; background: #13283a; margin: 26px 0; }
+    .callout p { margin: 0; }
+    .pill { display: inline-block; border: 1px solid #3a5c70; background: #142b3b; padding: 10px 16px; border-radius: 24px; color: #a7f3d0; font-size: 15px; margin: 8px 8px 0 0; }
+    .big-number { font-size: 64px; font-weight: 750; color: #6ee7b7; display: block; }
+    .table-scroll { overflow: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 17px; }
+    th, td { border-bottom: 1px solid #365069; padding: 14px 12px; text-align: left; }
+    th { color: #67e8f9; }
+    code { font-family: ui-monospace, monospace; color: #a7f3d0; font-size: 0.88em; }
+    a { color: #67e8f9; text-underline-offset: 4px; }
+    img { max-width: 100%; max-height: 450px; object-fit: contain; border: 1px solid #365069; border-radius: 10px; }
+    .architecture { display: flex; gap: 16px; align-items: stretch; margin: 30px 0; flex-wrap: wrap; }
+    .architecture .card { flex: 1; min-width: 220px; }
+    .architecture p { font-size: 16px; }
+    .architecture .arrow { display: grid; place-items: center; color: #67e8f9; font-size: 28px; }
+    .deck-controls { display: flex; gap: 18px; align-items: center; border-top: 1px solid #2b4357; padding-top: 20px; }
+    button { padding: 12px 18px; border: 1px solid #49657b; border-radius: 8px; background: #14283a; color: #e5eef8; font: inherit; cursor: pointer; }
+    button:hover { background: #204055; }
+    button:disabled { opacity: 0.4; cursor: default; }
+    :focus-visible { outline: 3px solid #67e8f9; outline-offset: 4px; }
+    #counter { margin-right: auto; color: #b6c9dc; font-size: 14px; }
+    .progress-track { height: 3px; background: #23394c; margin-top: 18px; }
+    #progress { height: 100%; background: #67e8f9; width: 9%; }
+    @media (max-width: 760px) { .deck { padding: 22px; } .slide { padding-top: 20px; } .grid { grid-template-columns: 1fr; } p, li { font-size: 18px; } .lead { font-size: 22px; } .card { padding: 20px; } .deck-controls { gap: 8px; flex-wrap: wrap; } button { font-size: 14px; padding: 10px; } table { font-size: 14px; } }
+    @media print { :root { color-scheme: light; background: white; color: #0b1420; } body { background: white; } .deck { padding: 0; max-width: none; } .slide, .slide[hidden] { display: block !important; min-height: auto; padding: 28px; break-after: page; } .slide:last-child { break-after: auto; } .deck-controls, .progress-track { display: none; } h1 { font-size: 52px; } h2 { font-size: 34px; } p, li, .card p, .card li { font-size: 15px; color: #20364a; } .card, .callout { background: #eff6fb; border-color: #52657e; } .eyebrow, h3, code, th, a { color: #075569; } .big-number { color: #14634f; } table { font-size: 13px; } .pill { background: #eff6fb; color: #14634f; } img { max-height: 280px; } }
+  </style>
+</head>
+<body>
+  <div class="deck">
+    <main aria-label="Apresentação Logic Quest">
+      <section class="slide" aria-label="Slide 1">
+        <span class="eyebrow">O Laboratório de Circuitos · 1 minuto</span>
+        <h1 tabindex="-1">Logic Quest</h1>
+        <p class="lead">Aprender lógica digital montando, experimentando e verificando circuitos.</p>
+        <div><span class="pill">6 sistemas</span><span class="pill">4 portas lógicas</span><span class="pill">Execução local</span></div>
+        <div class="callout"><p>Uma missão: restaurar o laboratório, um circuito de cada vez.</p></div>
+        <p class="subtle">Equipe, instituição e disciplina: dados ainda não fornecidos. Roteiro total: 23 minutos, incluindo 5 de demonstração.</p>
+      </section>
+      <section class="slide" aria-label="Slide 2" hidden>
+        <span class="eyebrow">Problema de aprendizagem · 2 minutos</span>
+        <h2 tabindex="-1">Da tabela ao circuito</h2>
+        <div class="grid"><div class="card"><h3>Lacuna proposta</h3><p>Memorizar tabelas-verdade pode não explicar como os sinais atravessam portas combinadas.</p><p>O público proposto são estudantes iniciantes em lógica digital.</p></div><div class="card"><h3>Experimentação</h3><p>Alterar uma entrada, acompanhar os fios e confrontar o resultado com o objetivo.</p><p>Com A=1 e B=1: AND=1, OR=1, XOR=0.</p></div></div>
+        <p class="subtle">Hipótese motivadora. Não houve entrevistas, questionário aplicado ou estudo de aprendizagem.</p>
+      </section>
+      <section class="slide" aria-label="Slide 3" hidden>
+        <span class="eyebrow">Objetivo e escopo · 2 minutos</span>
+        <h2 tabindex="-1">Um laboratório acessível no navegador</h2>
+        <div class="grid"><div class="card"><h3>Objetivos</h3><ul><li>Reconhecer AND, OR, NOT e XOR.</li><li>Compreender composição e sinais.</li><li>Corrigir soluções com contraexemplos.</li></ul></div><div class="card"><h3>MVP entregue</h3><ul><li>Menu, fases, editor e sucesso.</li><li>Montagem e simulação ao vivo.</li><li>Tabela completa e progresso local.</li></ul></div></div>
+        <p class="subtle">Sem backend, login, ranking, multiplayer, editor de fases ou circuitos com memória.</p>
+      </section>
+      <section class="slide" aria-label="Slide 4" hidden>
+        <span class="eyebrow">Planejamento e requisitos · 2 minutos</span>
+        <h2 tabindex="-1">Etapas com entregas verificadas</h2>
+        <p>Escopo → ambiente → motor → editor → validação → fases → interface → persistência → revisão → materiais.</p>
+        <div class="grid"><div class="card"><h3>Requisitos centrais</h3><p>RF003: editar portas. RF007: testar 2ⁿ combinações. RF010: recuperar progresso.</p><p>RNF001: execução local. RNF003: confiabilidade lógica.</p></div><div class="card"><h3>Casos de uso</h3><p>Selecionar fase, montar circuito, simular, validar e consultar progresso.</p><p>Commits reais por etapa, com tipos, lint, testes e build.</p></div></div>
+        <p class="subtle"><a href="../docs/projeto.md">Requisitos e rastreabilidade</a> · <a href="../docs/projeto.md">Documentação técnica</a></p>
+      </section>
+      <section class="slide" aria-label="Slide 5" hidden>
+        <span class="eyebrow">Design e progressão · 2 minutos</span>
+        <h2 tabindex="-1">Seis desafios, dificuldade progressiva</h2>
+        <div class="table-scroll"><table><thead><tr><th>Fase</th><th>Sistema</th><th>Comportamento esperado</th></tr></thead><tbody>
+          <tr><td>1</td><td>Gerador</td><td><code>A AND B</code></td></tr><tr><td>2</td><td>Porta de emergência</td><td><code>A OR B</code></td></tr><tr><td>3</td><td>Alarme</td><td><code>NOT A</code></td></tr><tr><td>4</td><td>Fechadura</td><td><code>A XOR B</code></td></tr><tr><td>5</td><td>Ventilação</td><td><code>(A AND B) OR (NOT C)</code></td></tr><tr><td>6</td><td>Controle central</td><td><code>((A XOR B) AND C) OR (NOT D)</code></td></tr>
+        </tbody></table></div><p class="subtle">Contexto, instrução, portas permitidas, limites e sucesso definidos em dados. Entradas e saída permanecem fixas.</p>
+      </section>
+      <section class="slide" aria-label="Slide 6" hidden>
+        <span class="eyebrow">Ferramentas e código · 3 minutos</span>
+        <h2 tabindex="-1">Regras separadas da interface</h2>
+        <div class="architecture"><div class="card"><h3>Interface</h3><p>React + TypeScript + Vite</p><p>XYFlow · Tailwind · Button shadcn/ui · Lucide</p><p>Montagem, navegação e feedback</p></div><span class="arrow" aria-hidden="true">↔</span><div class="card"><h3>Domínio</h3><p>Portas puras e grafo</p><p>Validação completa e fases declarativas</p><p>Sem React, DOM, eval ou código do jogador</p></div><span class="arrow" aria-hidden="true">→</span><div class="card"><h3>Progresso</h3><p>localStorage versionado</p><p>Conquistas e última fase</p><p>Falhas tratadas sem impedir o jogo</p></div></div>
+        <p class="subtle">Vitest verifica regras. Playwright exercita o build de produção no navegador. Não há servidor de negócio.</p>
+      </section>
+      <section class="slide" aria-label="Slide 7" hidden>
+        <span class="eyebrow">Motor e validação · 2 minutos</span>
+        <h2 tabindex="-1">Uma configuração correta não basta</h2>
+        <div class="grid"><div class="card"><h3>Simulação</h3><p>Mostra a configuração atual dos interruptores.</p><p>Ordenação topológica detecta ciclos; sinais incompletos aparecem como ?.</p></div><div class="card"><h3>Validação</h3><p>Testa todas as 2ⁿ combinações. Na fase 6: 2⁴ = 16.</p><p>Verifica restrições e aceita soluções logicamente equivalentes.</p></div></div>
+        <div class="callout"><p>Objetivo AND, fio A→saída: 00 parece certo. Mas A=1 e B=0 produz 1 quando o esperado é 0.</p></div>
+      </section>
+      <section class="slide" aria-label="Slide 8" hidden>
+        <span class="eyebrow">Problemas e soluções · 2 minutos</span>
+        <h2 tabindex="-1">Integração guiada por testes</h2>
+        <div class="table-scroll"><table><thead><tr><th>Problema encontrado</th><th>Solução aplicada</th></tr></thead><tbody>
+          <tr><td>Medição de nós sobrescrevia montagem</td><td>Separar metadados visuais e alterações do circuito.</td></tr>
+          <tr><td>Storage bloqueado, cheio ou inválido</td><td>Validar versão/dados, fallback e aviso.</td></tr>
+          <tr><td>Foco após fechar confirmação</td><td>Manter Tab no diálogo; restaurar após remover inert.</td></tr>
+          <tr><td>Downloads e servidor restritos no ambiente</td><td>Instalação temporária e execução autorizada fora do sandbox.</td></tr>
+        </tbody></table></div><p class="subtle">Cada correção relevante foi conferida com testes ou revisão visual; sem ampliar o escopo do jogo.</p>
+      </section>
+      <section class="slide" aria-label="Slide 9" hidden>
+        <span class="eyebrow">Testes e evidências · 1 minuto</span>
+        <h2 tabindex="-1">Do motor ao percurso completo</h2>
+        <div class="grid"><div class="card"><span class="big-number">59</span><h3>Testes unitários</h3><p>Portas, grafos, equivalência, seis fases, edição e progresso.</p></div><div class="card"><span class="big-number">11</span><h3>Testes de navegador do jogo</h3><p>Build de produção, arraste, teclado, reinícios, reload e seis fases offline após carregar.</p></div></div>
+        <p>Instalação pelo lockfile, tipos, lint e build passaram em 13/10/2026.</p><p class="subtle">Chromium no Linux; revisão visual em 1280 px e 390 px. Testes técnicos não comprovam eficácia pedagógica. <a href="../docs/projeto.md#validação">Evidências</a></p>
+      </section>
+      <section class="slide" aria-label="Slide 10" hidden>
+        <span class="eyebrow">Demonstração funcional · 5 minutos</span>
+        <h2 tabindex="-1">Vamos restaurar o laboratório</h2>
+        <div class="grid"><div><ol><li>Fase 1: erro proposital e contraexemplo.</li><li>Correção com AND e tabela aprovada.</li><li>Fase 5: combinar AND, NOT e OR.</li><li>Recarregar e conferir conquistas.</li></ol><p><a href="http://localhost:4173" target="_blank" rel="noopener">Abrir jogo local preparado</a></p><p class="subtle">Servidor preview deve estar ativo; fases 1–4 concluídas no navegador da demonstração.</p></div><a href="../docs/evidencias/fase-5.png" target="_blank" rel="noopener"><img src="../docs/evidencias/fase-5.png" alt="Captura real da fase 5 com circuito combinado conectado e saída 1"></a></div>
+      </section>
+      <section class="slide" aria-label="Slide 11" hidden>
+        <span class="eyebrow">Entrega e pendências · 1 minuto</span>
+        <h2 tabindex="-1">Produto testado, limites explícitos</h2>
+        <div class="grid"><div class="card"><h3>Entregue</h3><p>Jogo, código, testes, README, requisitos, decisões, capturas e slides locais.</p><p>Roteiro de 23 minutos com demonstração de cinco.</p></div><div class="card"><h3>Pendente de dados reais</h3><p>Equipe, instituição, docente e aprovações. O modelo .docx foi fornecido.</p><p>Termo técnico preenchido; identificação e aprovação acadêmica pendentes. Não houve estudo com estudantes.</p></div></div>
+        <p class="subtle">Montagens duram a sessão. Progresso por perfil/origem, sem sincronização. Revisão em Chromium, sem certificação de acessibilidade. <a href="../docs/projeto.md#termo-de-abertura">Dados do Termo</a> · <a href="../docs/projeto.md">Roteiro completo</a></p>
+      </section>
+    </main>
+    <nav class="deck-controls" aria-label="Navegação dos slides"><span id="counter" role="status" aria-live="polite">Slide 1 de 11</span><button id="previous" type="button" aria-label="Slide anterior">← Anterior</button><button id="next" type="button" aria-label="Próximo slide">Próximo →</button></nav>
+    <div class="progress-track" aria-hidden="true"><div id="progress"></div></div>
+  </div>
+  <script>
+    const slides = [...document.querySelectorAll('.slide')];
+    const previous = document.getElementById('previous');
+    const next = document.getElementById('next');
+    let current = 0;
+    function show(index) {
+      current = Math.max(0, Math.min(slides.length - 1, index));
+      slides.forEach((slide, i) => { slide.hidden = i !== current; });
+      previous.disabled = current === 0;
+      next.disabled = current === slides.length - 1;
+      document.getElementById('counter').textContent = `Slide ${current + 1} de ${slides.length}`;
+      document.getElementById('progress').style.width = `${((current + 1) / slides.length) * 100}%`;
+      history.replaceState(null, '', `#${current + 1}`);
+      slides[current].querySelector('h1, h2').focus();
+    }
+    previous.addEventListener('click', () => show(current - 1));
+    next.addEventListener('click', () => show(current + 1));
+    document.addEventListener('keydown', event => {
+      if (event.altKey || event.ctrlKey || event.metaKey) return;
+      if (event.key === 'ArrowRight' || event.key === 'ArrowLeft') { event.preventDefault(); show(current + (event.key === 'ArrowRight' ? 1 : -1)); }
+      if (event.key === 'Home' || event.key === 'End') { event.preventDefault(); show(event.key === 'Home' ? 0 : slides.length - 1); }
+    });
+    const requested = /^#\d+$/.test(location.hash) ? Number(location.hash.slice(1)) - 1 : 0;
+    show(requested);
+  </script>
+</body>
+</html>

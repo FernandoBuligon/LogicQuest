@@ -1,0 +1,23 @@
+import { test, expect } from '@playwright/test'
+
+test('abre slides locais, navega por teclado e imprime todas as páginas', async ({ page }) => {
+  page.on('pageerror', error => { throw error })
+  await page.goto(new URL('../../apresentacao/slides.html', import.meta.url).href)
+  await expect(page.getByRole('heading', { name: 'Logic Quest', exact: true })).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Slide anterior' })).toBeDisabled()
+  await page.getByRole('button', { name: 'Próximo slide' }).click()
+  await expect(page.getByRole('heading', { name: 'Da tabela ao circuito' })).toBeFocused()
+  await page.keyboard.press('End')
+  await expect(page.getByRole('status')).toHaveText('Slide 11 de 11')
+  await expect(page.getByRole('button', { name: 'Próximo slide' })).toBeDisabled()
+  await page.keyboard.press('ArrowLeft')
+  await expect(page.getByRole('heading', { name: 'Vamos restaurar o laboratório' })).toBeVisible()
+  await expect(page.getByRole('img')).toBeVisible()
+  expect(await page.getByRole('img').evaluate((image: HTMLImageElement) => image.complete && image.naturalWidth > 0)).toBe(true)
+  await page.keyboard.press('Home')
+  await expect(page.getByRole('status')).toHaveText('Slide 1 de 11')
+  await page.screenshot({ path: '/tmp/logicquest-slides.png' })
+  await page.emulateMedia({ media: 'print' })
+  await expect(page.locator('.slide:visible')).toHaveCount(11)
+  await expect(page.getByRole('navigation')).toBeHidden()
+})

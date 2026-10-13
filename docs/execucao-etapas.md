@@ -19,3 +19,9 @@ Commit: `69acffe` — ✨ feat: implementar motor lógico com validação de gra
 ## Etapa 3 — Editor visual
 
 Concluída. Nós personalizados XYFlow, paleta, posições, handles explícitos, remoção em cascata, entradas/saída fixas e sinais ao vivo. Há conexão visual e formulário para teclado/telas menores, remoção de fios, reinício e retorno. Tipos, lint, 21 testes unitários, build e 3 testes Chromium passaram. Os testes reais revelaram uma sobrescrita durante medição dos nós; medição/seleção agora ficam separadas do circuito. Chromium restaurado em `/tmp`; servidor de testes necessita execução fora do sandbox. Próxima etapa: validação exaustiva por fase.
+
+Commit: `b38a4ec` — ✨ feat: adicionar editor visual com simulação de sinais.
+
+## Etapa 4 — Validação completa
+
+Concluída. Validador puro verifica estrutura, entradas fixas, portas disponíveis, limite e todas as `2^n` combinações. Retorna linhas esperadas/calculadas e primeiro contraexemplo. Equivalência por De Morgan testada; coincidência em uma só configuração não passa. Tipos, lint, 30 testes unitários e build passaram. Próxima etapa: integrar as seis fases e progressão.

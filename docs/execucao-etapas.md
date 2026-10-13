@@ -9,3 +9,7 @@ Concluída. Repositório e planejamento integralmente inspecionados; escopo, cri
 ## Etapa 1 — Estrutura mínima
 
 Vite/React/TypeScript configurados; Tailwind via plugin Vite, XYFlow, Lucide e Button shadcn/ui instalados. Scripts de execução, build, lint, tipos, testes e navegador preparados. Lockfile e gitignore presentes. `npm run typecheck`, `npm run lint`, `npm test` (1 teste) e `npm run build` passaram. A verificação de abertura no Chromium é registrada no commit desta etapa.
+
+## Etapa 2 — Motor lógico e testes
+
+Concluída. Tipos explícitos, funções puras AND/OR/NOT/XOR, inspeção de handles e avaliador de grafos independentes de React. Detecta dependências inexistentes, fios/IDs repetidos, destino ocupado, ciclos (inclusive fora da saída), entradas sem valor e conexões incompletas; preserva sinais conhecidos durante a montagem. `npm run typecheck`, `npm run lint`, `npm test` (19 testes no total) e `npm run build` passaram na retomada de 13/10/2026. Próxima etapa: editor visual.

@@ -31,3 +31,9 @@ Commit: `d6ccefc` — ✨ feat: validar soluções por tabela-verdade completa.
 ## Etapa 5 — Fases e progressão
 
 Concluída. Seis configurações com contexto, instruções, objetivos, limites e feedback. Menu, seleção, bloqueio sequencial, revisita e sucesso integrados ao editor/validador; tabelas reais exibidas no feedback. Rascunhos em memória preservam montagens na navegação. Tipos, lint, 43 testes unitários (solução correta/incorreta das seis fases), build e 4 testes Chromium passaram. Próxima etapa: identidade visual e experiência educacional; persistência prevista na etapa 7.
+
+Commit: `4ade23c` — ✨ feat: integrar seis fases e progressão do laboratório.
+
+## Etapa 6 — Interface e experiência
+
+Concluída. Identidade escura com ciano/verde, menu ilustrado em SVG local, cards, instruções, indicadores e feedback com tabela real. Foco na navegação e link de salto, controles rotulados, cores acompanhadas de 0/1/textos. Layout revisado visualmente em 1280 px e 390 px; montagem por seletores em tela menor sem rolagem horizontal da página. Tipos, lint, 43 testes, build e 5 testes Chromium passaram. Próxima etapa: persistência local e confiabilidade.

@@ -16,14 +16,21 @@ export default function App() {
   const activeId = progress.lastLevel
   const completed = progress.completed
   const [confirmReset, setConfirmReset] = useState(false)
+  const resetButtonRef = useRef<HTMLButtonElement>(null)
+  const resetWasOpen = useRef(false)
   const [drafts, setDrafts] = useState<Record<number, Draft>>({})
   const [result, setResult] = useState<Validation | null>(null)
   const mainRef = useRef<HTMLElement>(null)
   useEffect(() => { mainRef.current?.querySelector('h1')?.focus() }, [screen, activeId])
+  useEffect(() => {
+    if (!confirmReset && resetWasOpen.current) resetButtonRef.current?.focus()
+    resetWasOpen.current = confirmReset
+  }, [confirmReset])
   const level = levels.find(item => item.id === activeId)!
   function updateProgress(next: Progress) {
     setSavedProgress({ progress: next, available: saveProgress(next) })
   }
+  function closeReset() { setConfirmReset(false) }
   function openLevel(id: number) {
     if (!isUnlocked(id, completed)) return
     updateProgress({ ...progress, lastLevel: id })
@@ -32,8 +39,8 @@ export default function App() {
   }
   return <div className="app-shell">
     <a href="#main-content" className="skip-link">Pular para o conteúdo</a>
-    <header className="app-header"><button className="brand" onClick={() => setScreen('home')} aria-label="Logic Quest — menu inicial"><CircuitBoard size={28} aria-hidden="true" /><span>Logic Quest<small>O Laboratório de Circuitos</small></span></button><span className="progress-badge">{completed.length} / 6 sistemas restaurados</span></header>
-    <main id="main-content" ref={mainRef}>
+    <header className="app-header" inert={confirmReset}><button className="brand" onClick={() => setScreen('home')} aria-label="Logic Quest — menu inicial"><CircuitBoard size={28} aria-hidden="true" /><span>Logic Quest<small>O Laboratório de Circuitos</small></span></button><span className="progress-badge">{completed.length} / 6 sistemas restaurados</span></header>
+    <main id="main-content" ref={mainRef} inert={confirmReset}>
       {!available && <p className="storage-notice" role="status">O navegador não permite salvar o progresso. Você pode jogar nesta sessão; as conquistas podem se perder ao recarregar.</p>}
       {screen === 'home' && <section className="home-screen">
         <div className="home-copy">
@@ -43,7 +50,7 @@ export default function App() {
         <div className="home-actions"><Button size="lg" onClick={() => openLevel(activeId)}><Play size={18} />{completed.length ? 'Continuar missão' : 'Iniciar missão'}</Button><Button variant="outline" size="lg" onClick={() => setScreen('levels')}>Selecionar fase<ArrowRight size={18} /></Button></div>
         </div><LabIllustration />
         <div className="intro-steps"><article><strong>01 · Monte</strong><p>Adicione portas e conecte entradas e saídas.</p></article><article><strong>02 · Experimente</strong><p>Alterne 0 e 1 para acompanhar os sinais.</p></article><article><strong>03 · Verifique</strong><p>Teste todas as combinações e libere a próxima fase.</p></article></div>
-        <div className="progress-settings"><p>As fases concluídas são salvas neste navegador. A montagem atual fica disponível enquanto esta página estiver aberta.</p><Button variant="ghost" size="sm" onClick={() => setConfirmReset(true)}>Reiniciar progresso</Button></div>
+        <div className="progress-settings"><p>As fases concluídas são salvas neste navegador. A montagem atual fica disponível enquanto esta página estiver aberta.</p><Button ref={resetButtonRef} variant="ghost" size="sm" onClick={() => setConfirmReset(true)}>Reiniciar progresso</Button></div>
       </section>}
       {screen === 'levels' && <section className="levels-screen"><span className="eyebrow">Mapa do laboratório</span><h1 tabIndex={-1}>Selecione uma fase</h1><p>Restaure os sistemas em sequência. Fases concluídas podem ser revisitadas.</p><div className="level-grid">{levels.map(item => {
         const done = completed.includes(item.id)
@@ -68,9 +75,9 @@ export default function App() {
       </section>}
       {screen === 'success' && result && <section className="success-screen"><Trophy size={52} aria-hidden="true" /><span className="eyebrow">Sistema {level.id} restaurado</span><h1 tabIndex={-1}>{level.id === 6 ? 'Laboratório restaurado!' : 'Missão cumprida!'}</h1><p>{level.success}</p><ValidationFeedback result={result} inputs={level.inputs} /><div className="home-actions">{level.id < 6 && <Button onClick={() => openLevel(level.id + 1)}>Próxima fase<ArrowRight size={18} /></Button>}<Button variant="outline" onClick={() => setScreen('levels')}>Selecionar fase</Button><Button variant="ghost" onClick={() => openLevel(level.id)}>Revisitar circuito</Button></div></section>}
     </main>
-    {confirmReset && <div className="dialog-backdrop"><section role="alertdialog" aria-modal="true" aria-labelledby="reset-title" aria-describedby="reset-description" className="confirm-dialog" onKeyDown={event => { if (event.key === 'Escape') setConfirmReset(false); if (event.key === 'Tab') { event.preventDefault(); const buttons = [...event.currentTarget.querySelectorAll('button')]; buttons[(buttons.indexOf(document.activeElement as HTMLButtonElement) + (event.shiftKey ? -1 : 1) + buttons.length) % buttons.length].focus() } }}>
-      <h2 id="reset-title">Reiniciar todo o progresso?</h2><p id="reset-description">As fases concluídas e as montagens desta sessão serão apagadas. Para limpar apenas o circuito, use Reiniciar fase no editor.</p><div className="home-actions"><Button autoFocus variant="outline" onClick={() => setConfirmReset(false)}>Cancelar</Button><Button variant="destructive" onClick={() => { updateProgress(initialProgress()); setDrafts({}); setResult(null); setScreen('home'); setConfirmReset(false) }}>Apagar progresso</Button></div>
+    {confirmReset && <div className="dialog-backdrop"><section role="alertdialog" aria-modal="true" aria-labelledby="reset-title" aria-describedby="reset-description" className="confirm-dialog" onKeyDown={event => { if (event.key === 'Escape') closeReset(); if (event.key === 'Tab') { event.preventDefault(); const buttons = [...event.currentTarget.querySelectorAll('button')]; buttons[(buttons.indexOf(document.activeElement as HTMLButtonElement) + (event.shiftKey ? -1 : 1) + buttons.length) % buttons.length].focus() } }}>
+      <h2 id="reset-title">Reiniciar todo o progresso?</h2><p id="reset-description">As fases concluídas e as montagens desta sessão serão apagadas. Para limpar apenas o circuito, use Reiniciar fase no editor.</p><div className="home-actions"><Button autoFocus variant="outline" onClick={closeReset}>Cancelar</Button><Button variant="destructive" onClick={() => { updateProgress(initialProgress()); setDrafts({}); setResult(null); setScreen('home'); closeReset() }}>Apagar progresso</Button></div>
     </section></div>}
-    <footer>0 é desligado. 1 é ligado. Cada conexão é uma nova descoberta.</footer>
+    <footer inert={confirmReset}>0 é desligado. 1 é ligado. Cada conexão é uma nova descoberta.</footer>
   </div>
 }

@@ -2,7 +2,7 @@ import { test, expect, type Page } from '@playwright/test'
 
 async function openEditor(page: Page) {
   await page.goto('/')
-  await page.getByRole('button', { name: 'Abrir laboratório' }).click()
+  await page.getByRole('button', { name: 'Iniciar missão' }).click()
 }
 async function connect(page: Page, source: string, target: string) {
   const tools = page.getByText('Conectar por seleção / remover fios')
@@ -38,10 +38,28 @@ test('monta AND, alterna sinais, rejeita entrada ocupada e remove fios com a por
 
 test('recusa ciclos e reinicia o circuito', async ({ page }) => {
   await openEditor(page)
-  await page.getByRole('button', { name: 'NOT', exact: true }).click()
-  await connect(page, 'Porta NOT 1', 'Porta NOT 1 · entrada 1')
+  await page.getByRole('button', { name: 'AND', exact: true }).click()
+  await connect(page, 'Porta AND 1', 'Porta AND 1 · entrada 1')
   await expect(page.getByRole('status')).toContainText('ciclo')
   await expect(page.getByText('Nenhum fio conectado.')).toBeVisible()
   await page.getByRole('button', { name: 'Reiniciar fase' }).click()
-  await expect(page.getByRole('button', { name: 'Remover porta NOT' })).toHaveCount(0)
+  await expect(page.getByRole('button', { name: 'Remover porta AND' })).toHaveCount(0)
+})
+
+test('valida todas as combinações antes de liberar a fase seguinte', async ({ page }) => {
+  await openEditor(page)
+  await connect(page, 'Entrada A', 'Saída · entrada 1')
+  await page.getByRole('button', { name: 'Testar circuito' }).click()
+  await expect(page.getByRole('heading', { name: 'Ainda falta um ajuste' })).toBeVisible()
+  await expect(page.getByRole('region', { name: 'Resultado da validação' })).toContainText('A = 1, B = 0')
+  await page.getByRole('button', { name: 'Reiniciar fase' }).click()
+  await page.getByRole('button', { name: 'AND', exact: true }).click()
+  await connect(page, 'Entrada A', 'Porta AND 1 · entrada 1')
+  await connect(page, 'Entrada B', 'Porta AND 1 · entrada 2')
+  await connect(page, 'Porta AND 1', 'Saída · entrada 1')
+  await page.getByRole('button', { name: 'Testar circuito' }).click()
+  await expect(page.getByRole('heading', { name: 'Missão cumprida!' })).toBeVisible()
+  await expect(page.getByText('Seu circuito foi aprovado nas 4 combinações possíveis.')).toBeVisible()
+  await page.getByRole('button', { name: 'Próxima fase' }).click()
+  await expect(page.getByRole('heading', { name: 'Porta de emergência', exact: true })).toBeVisible()
 })

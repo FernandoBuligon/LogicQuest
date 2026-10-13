@@ -25,3 +25,9 @@ Commit: `b38a4ec` — ✨ feat: adicionar editor visual com simulação de sinai
 ## Etapa 4 — Validação completa
 
 Concluída. Validador puro verifica estrutura, entradas fixas, portas disponíveis, limite e todas as `2^n` combinações. Retorna linhas esperadas/calculadas e primeiro contraexemplo. Equivalência por De Morgan testada; coincidência em uma só configuração não passa. Tipos, lint, 30 testes unitários e build passaram. Próxima etapa: integrar as seis fases e progressão.
+
+Commit: `d6ccefc` — ✨ feat: validar soluções por tabela-verdade completa.
+
+## Etapa 5 — Fases e progressão
+
+Concluída. Seis configurações com contexto, instruções, objetivos, limites e feedback. Menu, seleção, bloqueio sequencial, revisita e sucesso integrados ao editor/validador; tabelas reais exibidas no feedback. Rascunhos em memória preservam montagens na navegação. Tipos, lint, 43 testes unitários (solução correta/incorreta das seis fases), build e 4 testes Chromium passaram. Próxima etapa: identidade visual e experiência educacional; persistência prevista na etapa 7.

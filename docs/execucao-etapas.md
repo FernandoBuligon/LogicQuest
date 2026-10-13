@@ -51,3 +51,13 @@ Commit: `1bd5798` — ✨ feat: salvar progresso local e confirmar reinicializa�
 Concluída. Percurso das seis fases no build de produção, com tentativa incompleta/incorreta/correta em cada fase e rede desligada após carregar a aplicação. Handles por arraste, movimentação, exclusão por teclado, nós fixos e remoção em cascata exercitados. Diálogo torna fundo inativo, mantém Tab no modal e restaura foco após cancelamento; controles do canvas traduzidos. Código provisório do editor removido. Capturas do menu, fase 5 e sucesso final revisadas visualmente. Roteiro de cinco minutos em `docs/demonstracao.md`.
 
 `npm ci` reinstalou 218 pacotes pelo lockfile; tipos, lint, 60 testes unitários, build e 11 testes Chromium passaram. A primeira instalação foi bloqueada pelo DNS do sandbox; a execução autorizada fora dele concluiu. Limitações: montagens apenas na sessão, progresso por navegador/origem, editor com zoom em telas pequenas, revisão em Chromium Linux (não certifica outros navegadores/leitores de tela). Próxima etapa: documentação acadêmica e slides.
+
+Commit: `c2c1841` — 🧪 test: revisar seis fases e interações no build de produção.
+
+## Etapa 9 — Documentação e materiais
+
+Concluída com pendências externas explicitadas. README completo, RF001–RF012/RNF001–RNF005 e CDU001–CDU005 rastreáveis, objetivos/público/lacuna propostos, evidências técnicas e capturas reais. Dados para o Termo de Abertura organizados sem inventar participantes/entrevistas/aprovações. Slides HTML locais com navegação, versão de impressão e roteiro de 23 minutos (cinco de demonstração). Checklist final confrontado com a implementação. Lint passou; teste adicional de navegador dos slides passou (12 cenários de navegador no total); links/recursos locais e captura da apresentação revisados.
+
+Pendências externas: modelo acadêmico `.docx`, identificação institucional/equipe/docente, calendário/atribuições e validações reais se exigidas. **Termo final não gerado.** Não houve avaliação pedagógica com estudantes. O jogo está funcional; a documentação distingue hipóteses de evidências técnicas. Commits desta etapa podem ser consultados em `git log --oneline`.
+
+Commits: `f23e1f1` — 📚 docs: documentar uso requisitos e evidências do MVP; `345ac5b` — 📚 docs: preparar dados e pendências do termo de abertura. Slides, roteiro e teste correspondente estão no commit seguinte desta etapa, consultável pelo título no histórico.

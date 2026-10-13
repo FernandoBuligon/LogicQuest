@@ -37,3 +37,9 @@ Commit: `4ade23c` — ✨ feat: integrar seis fases e progressão do laboratóri
 ## Etapa 6 — Interface e experiência
 
 Concluída. Identidade escura com ciano/verde, menu ilustrado em SVG local, cards, instruções, indicadores e feedback com tabela real. Foco na navegação e link de salto, controles rotulados, cores acompanhadas de 0/1/textos. Layout revisado visualmente em 1280 px e 390 px; montagem por seletores em tela menor sem rolagem horizontal da página. Tipos, lint, 43 testes, build e 5 testes Chromium passaram. Próxima etapa: persistência local e confiabilidade.
+
+Commit: `8cc8fdd` — 💄 feat: aplicar identidade visual e orientar a montagem.
+
+## Etapa 7 — Persistência e confiabilidade
+
+Concluída. Chave `logic-quest:progress:v1` guarda fases concluídas e última fase; recuperação valida versão/tipos/sequência e corrige retomada bloqueada. Dados ausentes/corrompidos e storage bloqueado/cheio não quebram o jogo; indisponibilidade é informada. Reiniciar fase limpa somente a montagem; reiniciar progresso confirma antes de apagar conquistas e rascunhos. Tipos, lint, 60 testes unitários, build e 8 testes Chromium passaram, incluindo reload, cancelamento de reset e navegação sem perder montagem. Próxima etapa: revisão geral de integração.

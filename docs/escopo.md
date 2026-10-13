@@ -1,6 +1,6 @@
 # Escopo e aceite — Logic Quest
 
-## Diagnóstico
+## Diagnóstico inicial (etapa 0)
 
 Repositório novo: README de uma linha, commit inicial e planejamento fornecido pelo usuário. Não há código, dependências, scripts, AGENTS.md aplicável ou modelo acadêmico `.docx`. O planejamento original será preservado sem alterações. Branch de trabalho: `feat/logic-quest`.
 

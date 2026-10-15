@@ -4,10 +4,10 @@ export interface Point { x: number; y: number }
 export interface Draft { circuit: Circuit; positions: Record<string, Point> }
 export interface EditorRules { inputs: string[]; availableGates: GateKind[]; maxGates: number }
 
-export function createDraft(inputs: string[]): Draft {
+export function createDraft(inputs: string[], maxGates = 7): Draft {
   return {
     circuit: { nodes: [...inputs.map(label => ({ id: label, kind: 'input' as const, label })), { id: 'output', kind: 'output' }], wires: [] },
-    positions: Object.fromEntries([...inputs.map((id, i) => [id, { x: 65, y: 65 + i * 125 }]), ['output', { x: 820, y: 190 }]]),
+    positions: Object.fromEntries([...inputs.map((id, i) => [id, { x: 65, y: 65 + i * 168 }]), ['output', { x: 330 + Math.ceil(maxGates / 3) * 210, y: 160 }]]),
   }
 }
 

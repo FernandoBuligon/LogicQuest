@@ -1,8 +1,8 @@
 # Logic Quest — O Laboratório de Circuitos
 
-Jogo educativo de puzzles 2D para aprender lógica digital experimentando sinais e montando circuitos. O jogador restaura seis sistemas de um laboratório com portas AND, OR, NOT e XOR. Cada solução é verificada contra **todas** as combinações possíveis das entradas, aceitando circuitos logicamente equivalentes dentro das regras da fase.
+Jogo educativo de puzzles 2D para aprender lógica digital experimentando sinais e montando circuitos. A trilha tem **11 etapas**: quatro tutoriais guiados, duas fases de prática e cinco desafios com portas AND, OR, NOT e XOR. A interface usa superfícies neutras, um único acento terracota, tipografia local e navegação consistente. A bancada ocupa o espaço disponível; conteúdos extensos e telas menores permitem rolagem para preservar a legibilidade. Cada solução é verificada contra **todas** as combinações possíveis das entradas, aceitando circuitos logicamente equivalentes dentro das regras da fase.
 
-MVP funcional. Sem backend, login, serviços remotos, fontes externas ou conexão à internet em tempo de execução.
+Plataforma de aprendizado interativo. Sem backend, login, serviços remotos ou conexão à internet em tempo de execução. A fonte Manrope é servida localmente, com sua licença em `public/fonts/`.
 
 ## Preparar o ambiente e executar
 
@@ -81,26 +81,33 @@ O build fica em `dist/`. `npm run preview` serve o resultado localmente, normalm
 
 ## Como jogar
 
-1. Clique em **Iniciar missão** ou selecione uma fase disponível. Fases futuras são liberadas em sequência.
-2. Leia o objetivo e adicione uma porta pela paleta. Arraste a porta para posicioná-la.
+1. Clique em **Começar a aprender** ou abra **Trilha de aprendizado** e selecione uma etapa disponível. Fases futuras são liberadas em sequência.
+2. Leia as abas **Missão**, **Aprender** e **Tabela**. Elas incluem contexto, explicação, exemplo, pergunta com resposta e tabela-verdade esperada. Os tutoriais têm passo a passo; as outras fases têm dicas graduais. Adicione uma porta pela paleta. Arraste a porta para posicioná-la.
 3. Arraste do ponto de saída de um componente ao ponto de entrada de outro. Cada entrada recebe um fio; uma saída pode alimentar vários destinos. NOT tem uma entrada; as outras portas têm duas.
 4. Clique em **Alternar 0 / 1** nos interruptores e observe os sinais dos componentes e fios. `?` significa sinal desconhecido porque o circuito está incompleto.
 5. Clique em **Testar circuito**. O jogo verifica todas as combinações, mostra um contraexemplo em caso de erro ou aprova a fase e libera a próxima.
 
-Para conectar com teclado ou em tela menor, abra **Conectar por seleção / remover fios**, selecione origem/destino e confirme. Para excluir, use a lixeira da porta ou selecione um fio/porta e pressione Delete/Backspace. Os componentes fixos não podem ser movidos/excluídos. Os controles do canvas ajustam o zoom e o enquadramento.
+No celular, alterne entre **Entender a missão** e **Montar circuito**; as duas áreas ficam lado a lado no computador. A trilha mostra os módulos **Tutoriais**, **Na prática** e **Desafios**, com paginação nas telas menores. O **Guia de lógica** traz seis conceitos e um simulador interativo independente.
+
+Para conectar com teclado ou em tela menor, abra **Conectar por seleção / remover fios**, selecione origem/destino e confirme. O painel de conexões abre sobre a bancada e pode ser fechado pelo botão **Fechar conexões**. Para excluir, use a lixeira da porta ou selecione um fio/porta e pressione Delete/Backspace. Os componentes fixos não podem ser movidos/excluídos. Os controles do canvas ajustam o zoom e o enquadramento.
 
 **Reiniciar fase** limpa só a montagem atual. **Reiniciar progresso**, no menu, pede confirmação antes de apagar conquistas e montagens. O progresso e a última fase acessada ficam no `localStorage` do navegador, na chave `logic-quest:progress:v1`. Montagens são mantidas ao navegar entre telas durante a sessão; recarregar a página limpa montagens. Mantenha a mesma origem (host e porta) para retomar o progresso.
 
 ## Fases
 
-| Fase | Sistema | Objetivo | Combinações |
+| Etapa | Sistema | Objetivo | Combinações |
 |---|---|---|---|
-| 1 | Ativando o gerador | `A AND B` | 4 |
-| 2 | Porta de emergência | `A OR B` | 4 |
-| 3 | Alarme invertido | `NOT A` | 2 |
-| 4 | Fechadura inteligente | `A XOR B` | 4 |
+| 1 · Tutorial | Ativando o gerador | `A AND B` | 4 |
+| 2 · Tutorial | Porta de emergência | `A OR B` | 4 |
+| 3 · Tutorial | Alarme invertido | `NOT A` | 2 |
+| 4 · Tutorial | Fechadura inteligente | `A XOR B` | 4 |
 | 5 | Circuito combinado | `(A AND B) OR (NOT C)` | 8 |
 | 6 | Restaurando o sistema | `((A XOR B) AND C) OR (NOT D)` | 16 |
+| 7 · Novo | Votação da turma | Pelo menos dois de três votos | 8 |
+| 8 · Novo | Roteador de sinais | Selecionar A ou B com S | 8 |
+| 9 · Novo | Código de paridade | Quantidade ímpar de sinais ligados | 16 |
+| 10 · Novo | Senhas em sintonia | Igualdade entre AB e CD | 16 |
+| 11 · Novo | Missão: estufa inteligente | Escolha de modo com trava obrigatória | 16 |
 
 ## Testes
 
@@ -115,21 +122,22 @@ npm run test:e2e
 
 Playwright gera o build e inicia um servidor de produção local na porta 4173, que deve estar livre. Em Linux, se faltarem bibliotecas do navegador, use as instruções apresentadas pelo Playwright (`npx playwright install-deps chromium`, requer permissão administrativa). Não é necessário instalar o navegador de testes para jogar.
 
-Validação: tipos, lint, **59 testes unitários**, **12 testes de navegador** (11 do jogo e 1 dos slides) e build. As seis fases foram concluídas no navegador com a rede desativada após o carregamento. Evidências e limites de cobertura: [documentação do projeto](docs/projeto.md#validação).
+Os testes unitários conferem as soluções das 11 etapas em todas as combinações, casos de fronteira dos desafios, desbloqueio, portas, motor, edição e persistência. Os testes de navegador cobrem a conclusão da trilha offline, o conteúdo educativo, a montagem por seleção e arraste e layouts de 320 a 1440 px. Os comandos acima produzem os resultados atualizados.
 
 ## Organização e materiais
 
 - `src/domain/`: tipos, funções booleanas, motor de grafos e validador puro, sem React/DOM.
 - `src/circuit/`: editor XYFlow, nós e adaptação entre apresentação e domínio.
-- `src/levels/`: seis fases declarativas e regras de desbloqueio.
+- `src/levels/`: 11 etapas declarativas, conteúdo didático e regras de desbloqueio.
 - `src/storage/`: recuperação e gravação seguras do progresso versionado.
-- `src/app/`, `src/components/`, `src/styles/`: telas, feedback e estilos.
+- `src/app/`, `src/components/`, `src/styles/`: telas, feedback e design system com tokens semânticos.
+- [Redesign e avaliação visual](docs/redesign.md): direção visual, telas revisadas, evidências e limites da auditoria.
 - [Documentação do projeto](docs/projeto.md): objetivos, requisitos, casos de uso, decisões, validação e roteiro de apresentação.
 - [Termo de Abertura preenchido](docs/TERMO_DE_ABERTURA_LOGIC_QUEST.docx): requisitos, casos de uso, matrizes, diagramas e telas do Logic Quest. Dados pessoais/institucionais e aprovações seguem pendentes. O [modelo original](<docs/MODELO_TERMO DE ABERTURA DO PROJETO_COMPLETO.docx>) foi preservado.
 - [Slides HTML](apresentacao/slides.html): abra o arquivo diretamente no navegador; use as setas ou os botões para navegar e Ctrl+P para imprimir. Os slides não fazem parte do build do jogo.
 
 Stack: React 19, TypeScript 6, Vite 8, XYFlow 12, Tailwind CSS 4, Button adaptado de shadcn/ui, Lucide, Vitest e Playwright. Versões exatas em `package-lock.json`.
 
-Limitações: circuitos combinacionais sem memória; progresso por perfil/origem, sem sincronização remota; montagens não persistem após reload; canvas exige zoom em telas pequenas (há seletores alternativos). Revisão realizada em Chromium no Linux, com layouts de 1280 px e 390 px; não há certificação de acessibilidade nem ensaio pedagógico com estudantes.
+Limitações: circuitos combinacionais sem memória; progresso por perfil/origem, sem sincronização remota; montagens não persistem após reload; canvas pode exigir zoom em telas pequenas (há seletores alternativos); explicações e tabelas extensas podem rolar nos painéis, e o conteúdo principal também rola quando a altura disponível é pequena; a navegação permanece acessível. Não há certificação de acessibilidade nem ensaio pedagógico com estudantes. Os slides e materiais acadêmicos em `docs/` registram a versão original de seis fases; este README descreve a aplicação atual.
 
 Documentação consolidada para evitar duplicação. O planejamento inicial e os relatórios antigos estão preservados no histórico Git (`git log --oneline`); código, testes, configurações e materiais acadêmicos permanecem no repositório. `dist/` e relatórios de testes são gerados pelos comandos acima.

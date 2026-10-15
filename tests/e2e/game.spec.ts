@@ -4,9 +4,15 @@ import { solutions } from '../fixtures/solutions'
 
 const startLabel = 'Começar a aprender'
 test.beforeEach(async ({ page }) => { page.on('pageerror', error => { throw error }) })
+async function closeIntro(page: Page) {
+  const start = page.getByRole('button', { name: 'Entendi, começar' })
+  await expect(start).toBeVisible()
+  await start.click()
+}
 async function openEditor(page: Page) {
   await page.goto('/')
   await page.getByRole('button', { name: startLabel }).click()
+  await closeIntro(page)
 }
 async function connect(page: Page, source: string, target: string) {
   if (!await page.getByLabel('Origem', { exact: true }).isVisible()) await page.getByText('Conectar por seleção / remover fios').click()
@@ -100,6 +106,7 @@ test('recusa ciclos e reinicia a montagem', async ({ page }) => {
 
 test('ensina o raciocínio, oferece dicas graduais e tabela antes de testar', async ({ page }) => {
   await openEditor(page)
+  await page.getByRole('button', { name: 'Ajuda da fase' }).click()
   await page.getByRole('button', { name: 'Como começar', exact: true }).click()
   await expect(page.getByText('Adicione uma porta AND na barra acima da bancada.')).toBeVisible()
   await page.getByRole('tab', { name: 'Aprender', exact: true }).click()
@@ -120,6 +127,7 @@ test('preserva montagens ao navegar e recupera o progresso de onze fases', async
   await closeConnections(page)
   await page.getByRole('button', { name: 'Voltar para a trilha', exact: true }).click()
   await page.getByRole('button', { name: 'Jogar fase 1', exact: true }).click()
+  await closeIntro(page)
   await expect(page.getByRole('button', { name: 'Remover porta AND' })).toBeVisible()
   await connect(page, 'Entrada B', 'Porta AND 1 · entrada 2')
   await connect(page, 'Porta AND 1', 'Saída · entrada 1')
@@ -128,10 +136,12 @@ test('preserva montagens ao navegar e recupera o progresso de onze fases', async
   await page.reload()
   await expect(page.getByText('1 / 11 etapas concluídas')).toBeVisible()
   await page.getByRole('button', { name: 'Continuar aprendizado' }).click()
+  await closeIntro(page)
   await expect(page.getByRole('heading', { name: 'Porta de emergência', exact: true })).toBeVisible()
   await page.getByRole('button', { name: 'OR', exact: true }).click()
   await page.getByRole('button', { name: 'Reiniciar fase' }).click()
   await expect(page.getByRole('button', { name: 'Remover porta OR' })).toHaveCount(0)
+  await page.getByRole('button', { name: 'Voltar para a trilha' }).click()
   await expect(page.getByText('1 / 11 etapas concluídas')).toBeVisible()
   await page.getByRole('button', { name: 'Reiniciar progresso' }).click()
   await page.getByRole('button', { name: 'Cancelar', exact: true }).click()
@@ -152,6 +162,7 @@ test('recupera dados corrompidos e funciona com armazenamento bloqueado', async 
   await page.reload()
   await expect(page.getByText(/O navegador não permite salvar o progresso/)).toBeVisible()
   await page.getByRole('button', { name: startLabel }).click()
+  await closeIntro(page)
   await page.getByRole('button', { name: 'AND', exact: true }).click()
   await expect(page.getByRole('button', { name: 'Remover porta AND' })).toBeVisible()
 })
@@ -173,7 +184,7 @@ test('conclui as onze etapas offline, rejeitando soluções incompletas e incorr
     await page.getByText(`Ver tabela-verdade testada (${counts[i]} combinações)`).click()
     await expect(page.locator('tbody tr')).toHaveCount(counts[i])
     await expect(page.getByText(`${i + 1} / 11 etapas concluídas`)).toBeVisible()
-    if (i < 10) await page.getByRole('button', { name: 'Próxima fase' }).click()
+    if (i < 10) { await page.getByRole('button', { name: 'Próxima fase' }).click(); await closeIntro(page) }
   }
   await expect(page.getByRole('heading', { name: 'Sua lógica foi mais longe!' })).toBeVisible()
   await expect(page.getByRole('button', { name: 'Próxima fase' })).toHaveCount(0)
@@ -184,7 +195,7 @@ test('conecta por arraste, move portas e protege os componentes fixos', async ({
   await openEditor(page)
   await page.getByRole('button', { name: 'AND', exact: true }).click()
   const gate = page.getByRole('group', { name: 'Porta AND', exact: true })
-  await page.waitForTimeout(350) // Aguarda o enquadramento animado da nova porta.
+  await expect(gate).toBeVisible()
   async function drag(source: ReturnType<Page['locator']>, target: ReturnType<Page['locator']>) {
     const a = (await source.boundingBox())!
     const b = (await target.boundingBox())!
@@ -249,6 +260,7 @@ test('acomoda quatro tipos de porta nas bancadas estreitas', async ({ page }) =>
     await page.setViewportSize(viewport)
     await page.goto('/')
     await page.getByRole('button', { name: 'Continuar aprendizado' }).click()
+    await closeIntro(page)
     for (const gate of ['AND', 'OR', 'NOT', 'XOR']) await page.getByRole('button', { name: gate, exact: true }).click()
     const toolbarOverflow = await page.locator('.editor-toolbar').evaluate(element => element.scrollWidth > element.clientWidth + 1)
     expect(toolbarOverflow).toBe(false)
@@ -276,21 +288,20 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 1280, height: 720
     await expectResponsiveFrame(page)
     await expect(page.getByRole('button', { name: startLabel })).toBeInViewport({ ratio: 1 })
     await page.getByRole('button', { name: startLabel }).click()
+    await closeIntro(page)
     await page.getByRole('button', { name: 'Testar circuito' }).scrollIntoViewIfNeeded()
     await expect(page.getByRole('button', { name: 'Testar circuito' })).toBeInViewport({ ratio: 1 })
     await expectResponsiveFrame(page)
-    if (viewport.width <= 760) {
-      await page.getByRole('button', { name: 'Entender a missão', exact: true }).click()
-      await expect(page.getByRole('tab', { name: 'Aprender', exact: true })).toBeVisible()
-      await page.getByRole('button', { name: 'Montar circuito', exact: true }).click()
-    }
+    await page.getByRole('button', { name: 'Ajuda da fase', exact: true }).click()
+    await expect(page.getByRole('tab', { name: 'Aprender', exact: true })).toBeVisible()
+    await page.getByRole('button', { name: 'Fechar ajuda', exact: true }).click()
     await page.getByRole('button', { name: 'AND', exact: true }).click()
     await connect(page, 'Entrada A', 'Porta AND 1 · entrada 1')
     await expect(page.getByRole('status')).toContainText('Fio conectado')
     await expectResponsiveFrame(page)
     await closeConnections(page)
     await page.screenshot({ path: `/tmp/logicquest-editor-${viewport.width}.png` })
-    await page.getByRole('navigation', { name: 'Navegação principal' }).getByRole('button', { name: 'Trilha de aprendizado' }).click()
+    await page.getByRole('button', { name: 'Voltar para a trilha' }).click()
     await expectResponsiveFrame(page)
     await page.getByRole('tab', { name: /Desafios/ }).click()
     await expectResponsiveFrame(page)
@@ -311,3 +322,86 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 1280, height: 720
     await expectResponsiveFrame(page)
   })
 }
+
+test('apresenta a missão e preserva circuito, sinais, zoom e material ao consultar ajuda', async ({ page }) => {
+  await page.goto('/')
+  await page.getByRole('button', { name: startLabel }).click()
+  const dialog = page.getByRole('dialog')
+  await expect(dialog).toContainText('Ligue a saída somente quando A e B estiverem ligados.')
+  await expect(page.getByRole('button', { name: 'Entendi, começar' })).toBeFocused()
+  await page.keyboard.press('Escape')
+  await expect(dialog).not.toBeVisible()
+  await expect(page.getByRole('button', { name: 'Ajuda da fase' })).toBeFocused()
+  await page.getByRole('button', { name: 'AND', exact: true }).click()
+  await connect(page, 'Entrada A', 'Porta AND 1 · entrada 1')
+  await closeConnections(page)
+  await page.getByRole('button', { name: 'Alternar entrada A' }).click()
+  await page.getByRole('button', { name: 'Aumentar zoom' }).click()
+  await page.waitForTimeout(400)
+  const viewport = page.locator('.react-flow__viewport')
+  const before = await viewport.getAttribute('style')
+  await page.getByRole('button', { name: 'Ajuda da fase' }).click()
+  await page.getByRole('button', { name: 'Como começar', exact: true }).click()
+  await page.getByRole('tab', { name: 'Tabela', exact: true }).click()
+  await page.keyboard.press('Escape')
+  await expect(page.getByRole('button', { name: 'Ajuda da fase' })).toBeFocused()
+  await expect(viewport).toHaveAttribute('style', before!)
+  await expect(page.locator('.react-flow__edge')).toHaveCount(1)
+  await expect(page.getByRole('button', { name: 'Alternar entrada A' })).toHaveAttribute('aria-pressed', 'true')
+  await page.getByRole('button', { name: 'Ajuda da fase' }).click()
+  await expect(page.getByRole('tab', { name: 'Tabela', exact: true })).toHaveAttribute('aria-selected', 'true')
+  await page.getByRole('tab', { name: 'Missão', exact: true }).click()
+  await expect(page.getByText('Adicione uma porta AND na barra acima da bancada.')).toBeVisible()
+  await page.getByRole('button', { name: 'Fechar ajuda' }).click()
+})
+
+test('prioriza o canvas e mantém o zoom ao adicionar portas e redimensionar', async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem('logic-quest:progress:v1', JSON.stringify({ version: 1, completed: [1, 2, 3, 4, 5], lastLevel: 6 })))
+  await page.setViewportSize({ width: 1440, height: 900 })
+  await page.goto('/')
+  await page.getByRole('button', { name: 'Continuar aprendizado' }).click()
+  await closeIntro(page)
+  await expect(page.getByRole('navigation', { name: 'Navegação principal' })).not.toBeVisible()
+  const canvas = page.locator('.circuit-canvas')
+  const bounds = (await canvas.boundingBox())!
+  expect(bounds.width * bounds.height / (1440 * 900)).toBeGreaterThan(0.65)
+  const viewport = page.locator('.react-flow__viewport')
+  const before = await viewport.getAttribute('style')
+  for (const gate of ['AND', 'OR', 'NOT', 'XOR']) await page.getByRole('button', { name: gate, exact: true }).click()
+  await expect(viewport).toHaveAttribute('style', before!)
+  for (const size of [{ width: 768, height: 1024 }, { width: 320, height: 568 }, { width: 1440, height: 900 }]) {
+    await page.setViewportSize(size)
+    await expectResponsiveFrame(page)
+    await expect(page.getByRole('button', { name: 'Testar circuito' })).toBeInViewport({ ratio: 1 })
+    const box = (await canvas.boundingBox())!
+    expect(box.width * box.height / (size.width * size.height)).toBeGreaterThan(0.5)
+    await expect(page.locator('.react-flow__node')).toHaveCount(9)
+  }
+})
+
+
+test('enquadra entradas e saída no celular e mantém dicas progressivas no desafio', async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 568 })
+  await page.addInitScript(() => localStorage.setItem('logic-quest:progress:v1', JSON.stringify({ version: 1, completed: [1, 2, 3, 4, 5, 6], lastLevel: 7 })))
+  await page.goto('/')
+  await page.getByRole('button', { name: 'Continuar aprendizado' }).click()
+  await closeIntro(page)
+  for (const name of ['Entrada A', 'Entrada B', 'Entrada C', 'Saída do circuito']) {
+    await expect(page.getByRole('group', { name, exact: true })).toBeInViewport({ ratio: 0.99 })
+  }
+  await page.getByRole('button', { name: 'Ajuda da fase' }).click()
+  const mission = page.getByRole('tabpanel', { name: 'Missão', exact: true })
+  await expect(mission).not.toContainText('Quais duplas podem formar a maioria?')
+  await page.getByRole('button', { name: 'Preciso de uma dica', exact: true }).click()
+  await expect(mission).toContainText('Quais duplas podem formar a maioria?')
+  await expect(mission).not.toContainText('Calcule cada par com AND.')
+  await page.keyboard.press('Escape')
+  await page.getByRole('button', { name: 'Ajuda da fase' }).click()
+  await expect(mission).toContainText('Quais duplas podem formar a maioria?')
+  await page.getByRole('button', { name: '1/3 · Próxima dica', exact: true }).click()
+  await expect(mission).toContainText('Calcule cada par com AND.')
+  await page.getByRole('tab', { name: 'Tabela', exact: true }).click()
+  await expect(mission).not.toBeVisible()
+  await expect(page.getByRole('table')).toBeVisible()
+  await expectResponsiveFrame(page)
+})

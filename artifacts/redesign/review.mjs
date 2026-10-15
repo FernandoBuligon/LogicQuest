@@ -22,19 +22,23 @@ for (const viewport of viewports) {
   await page.evaluate(() => document.fonts.ready)
   await shot('home')
   await page.getByRole('button', { name: 'Começar a aprender' }).click()
+  await shot('intro')
+  await page.getByRole('button', { name: 'Entendi, começar' }).click()
+  checks.push({ viewport, screen: 'workbench-area', ...await page.locator('.circuit-canvas').evaluate(element => {
+    const bounds = element.getBoundingClientRect()
+    return { canvasShare: Number((bounds.width * bounds.height / (innerWidth * innerHeight)).toFixed(3)) }
+  }) })
   await page.getByRole('button', { name: 'AND', exact: true }).click()
   await page.waitForTimeout(200)
   await shot('game')
-  if (viewport.width <= 760) {
-    await page.getByRole('button', { name: 'Entender a missão', exact: true }).click()
-  }
+  await page.getByRole('button', { name: 'Ajuda da fase' }).click()
   await page.getByRole('tab', { name: 'Aprender', exact: true }).click()
   await shot('learn')
   await page.getByRole('tab', { name: 'Tabela', exact: true }).click()
   await shot('truth-table')
   await page.getByRole('tab', { name: 'Missão', exact: true }).click()
   await shot('lesson')
-  if (viewport.width <= 760) await page.getByRole('button', { name: 'Montar circuito', exact: true }).click()
+  await page.getByRole('button', { name: 'Fechar ajuda' }).click()
   for (const [source, destination] of [['Entrada A', 'Porta AND 1 · entrada 1'], ['Entrada B', 'Porta AND 1 · entrada 2'], ['Porta AND 1', 'Saída · entrada 1']]) {
     if (!await page.getByLabel('Origem', { exact: true }).isVisible()) await page.getByText('Conectar por seleção / remover fios').click()
     await page.getByLabel('Origem', { exact: true }).selectOption({ label: source })
@@ -63,6 +67,7 @@ for (const viewport of viewports) {
   await advanced.addInitScript(() => localStorage.setItem('logic-quest:progress:v1', JSON.stringify({ version: 1, completed: [1, 2, 3, 4, 5], lastLevel: 6 })))
   await advanced.goto(origin)
   await advanced.getByRole('button', { name: 'Continuar aprendizado' }).click()
+  await advanced.getByRole('button', { name: 'Entendi, começar' }).click()
   for (const kind of ['AND', 'OR', 'NOT', 'XOR']) await advanced.getByRole('button', { name: kind, exact: true }).click()
   await advanced.screenshot({ path: new URL(`advanced-${viewport.width}.png`, output).pathname })
   checks.push({ viewport, screen: 'advanced', ...await advanced.evaluate(() => ({
@@ -76,6 +81,7 @@ for (const viewport of viewports) {
   await advanced.getByLabel('Origem', { exact: true }).focus()
   await advanced.keyboard.press('Escape')
   checks.push({ viewport, screen: 'connection-keyboard', closed: !(await advanced.locator('.connection-tools').evaluate(element => element.open)), summaryFocused: await advanced.locator('.connection-tools summary').evaluate(element => element === document.activeElement) })
+  await advanced.getByRole('button', { name: 'Voltar para a trilha' }).click()
   await advanced.getByRole('navigation', { name: 'Navegação principal' }).getByRole('button', { name: 'Guia de lógica' }).click()
   await advanced.getByRole('button', { name: 'Ver conceito 6' }).click()
   await advanced.evaluate(() => document.documentElement.style.fontSize = '200%')
@@ -87,7 +93,7 @@ for (const viewport of viewports) {
   await advanced.close()
 }
 await writeFile(new URL('review-checks.json', output), JSON.stringify(checks, null, 2))
-const findings = checks.filter(check => check.horizontal || check.mainHorizontal || check.toolbarHorizontal || check.closed === false || check.summaryFocused === false || check.errors?.length)
+const findings = checks.filter(check => check.canvasShare < 0.5 || check.horizontal || check.mainHorizontal || check.toolbarHorizontal || check.closed === false || check.summaryFocused === false || check.errors?.length)
 console.log(JSON.stringify(findings))
 if (findings.length) process.exitCode = 1
 await browser.close()

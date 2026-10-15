@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { ArrowRight, BookOpen, Check, ChevronLeft, ChevronRight, CircuitBoard, FlaskConical, Home, Lock, Map, RotateCcw, X } from 'lucide-react'
+import { ArrowRight, BookOpen, Check, ChevronLeft, ChevronRight, CircuitBoard, CircleHelp, FlaskConical, Home, Lock, Map, RotateCcw, X } from 'lucide-react'
 import { Button } from '../components/ui/button'
 import CircuitEditor from '../circuit/CircuitEditor'
 import type { Draft } from '../circuit/model'
@@ -7,7 +7,7 @@ import { isUnlocked, levels, modules, type Module } from '../levels/levels'
 import { validateSolution, type Validation } from '../domain/validation'
 import ValidationFeedback from '../components/ValidationFeedback'
 import LabIllustration from '../components/LabIllustration'
-import LessonPanel from '../components/LessonPanel'
+import PhaseHelp from '../components/PhaseHelp'
 import GateExplorer from '../components/GateExplorer'
 import GuideBook from '../components/GuideBook'
 import { initialProgress, loadProgress, saveProgress, type Progress } from '../storage/progress'
@@ -29,7 +29,8 @@ export default function App() {
   const [narrow, setNarrow] = useState(() => window.innerWidth <= 370)
   const [guideMode, setGuideMode] = useState<'concepts' | 'explore'>('concepts')
   const [module, setModule] = useState<Module>('tutorial')
-  const [mobilePanel, setMobilePanel] = useState<'learn' | 'build'>('build')
+  const [help, setHelp] = useState<'intro' | 'material' | null>(null)
+  const helpButtonRef = useRef<HTMLButtonElement>(null)
   const [confirmReset, setConfirmReset] = useState(false)
   const resetButtonRef = useRef<HTMLButtonElement>(null)
   const resetWasOpen = useRef(false)
@@ -68,12 +69,12 @@ export default function App() {
     setModule(levels.find(item => item.id === id)!.module)
     setLevelPage(0)
     setResult(null)
-    setMobilePanel('build')
+    setHelp('intro')
     setScreen('game')
   }
   function navigate(next: Screen) { setResult(null); setScreen(next) }
   const selectedNav = screen === 'game' || screen === 'success' ? 'levels' : screen
-  return <div className="app-shell">
+  return <div className={`app-shell ${screen === 'game' ? 'is-playing' : ''}`}>
     <a href="#main-content" className="skip-link">Pular para o conteúdo</a>
     <aside className="app-sidebar" inert={confirmReset}>
       <button className="brand" onClick={() => navigate('home')} aria-label="Logic Quest — menu inicial" translate="no">
@@ -117,9 +118,14 @@ export default function App() {
             return <article className={`level-card ${done ? 'complete' : ''} ${!unlocked ? 'locked' : ''}`} key={item.id}><div className="level-card-top"><span className="level-number">{String(item.id).padStart(2, '0')}</span><span className="level-state">{done ? <><Check aria-hidden="true" size={13} />Concluída</> : unlocked ? <>Disponível</> : <><Lock aria-hidden="true" size={12} />Bloqueada</>}</span></div><h3>{item.name}</h3><p>{item.topic}</p><span className="level-meta">{item.inputs.length} entradas <span>·</span> Até {item.maxGates} {item.maxGates === 1 ? 'porta' : 'portas'} <span>·</span> {2 ** item.inputs.length} combinações</span><Button variant={done || !unlocked ? 'outline' : 'default'} disabled={!unlocked} onClick={() => openLevel(item.id)} aria-label={`${done ? 'Revisitar' : 'Jogar'} fase ${item.id}`}>{done ? 'Revisitar etapa' : unlocked ? item.module === 'tutorial' ? 'Começar tutorial' : 'Aceitar desafio' : `Conclua a etapa ${item.id - 1}`}{unlocked && <ArrowRight aria-hidden="true" size={15} />}</Button></article>
           })}</div>{pageCount > 1 && <div className="level-pagination"><Button variant="outline" size="sm" disabled={currentPage === 0} aria-label="Etapas anteriores" onClick={() => setLevelPage(currentPage - 1)}><ChevronLeft aria-hidden="true" size={17} /></Button><span>Página {currentPage + 1} de {pageCount}</span><Button variant="outline" size="sm" disabled={currentPage === pageCount - 1} aria-label="Mais etapas" onClick={() => setLevelPage(currentPage + 1)}><ChevronRight aria-hidden="true" size={17} /></Button></div>}</div>
         </section>}
-        {screen === 'game' && <section className={`game-screen mobile-${mobilePanel}`}><div className="mission-heading"><div><span className="eyebrow">{level.module === 'tutorial' ? 'TUTORIAL GUIADO' : level.module === 'practice' ? 'NA PRÁTICA' : 'DESAFIO'} <span>· ETAPA {String(level.id).padStart(2, '0')} DE {levels.length}</span></span><h1 tabIndex={-1}>{level.name}</h1><p>{level.topic}</p></div><div className="mission-navigation"><Button size="sm" variant="ghost" disabled={level.id === 1} aria-label="Etapa anterior" onClick={() => openLevel(level.id - 1)}><ChevronLeft aria-hidden="true" size={18} /></Button><span>{level.id}/{levels.length}</span><Button size="sm" variant="ghost" disabled={!isUnlocked(level.id + 1, completed)} aria-label="Etapa seguinte" onClick={() => openLevel(level.id + 1)}><ChevronRight aria-hidden="true" size={18} /></Button></div></div>
-          <div className="mobile-workspace-tabs" role="group" aria-label="Área da etapa"><button aria-pressed={mobilePanel === 'learn'} onClick={() => setMobilePanel('learn')}><BookOpen aria-hidden="true" size={16} />Entender a missão</button><button aria-pressed={mobilePanel === 'build'} onClick={() => setMobilePanel('build')}><CircuitBoard aria-hidden="true" size={16} />Montar circuito</button></div>
-          <div className="game-workspace"><LessonPanel key={`lesson-${level.id}`} level={level} /><div className="workbench"><CircuitEditor key={level.id} rules={level} initialDraft={drafts[level.id]} onBack={() => navigate('levels')} onDraftChange={draft => { setDrafts(current => ({ ...current, [level.id]: draft })); setResult(null) }} onTest={circuit => {
+        {screen === 'game' && <section className="game-screen">
+          <div className="mission-heading">
+            <Button variant="ghost" className="phase-back" aria-label="Voltar para a trilha" onClick={() => navigate('levels')}><ChevronLeft aria-hidden="true" size={20} /><span>Fases</span></Button>
+            <div className="phase-title"><span className="eyebrow">FASE {String(level.id).padStart(2, '0')} / {levels.length} · {level.module === 'tutorial' ? 'TUTORIAL' : level.module === 'practice' ? 'NA PRÁTICA' : 'DESAFIO'}</span><h1 tabIndex={-1}>{level.name}</h1></div>
+            <Button ref={helpButtonRef} variant="outline" aria-label="Ajuda da fase" aria-haspopup="dialog" onClick={() => setHelp('material')}><CircleHelp aria-hidden="true" size={20} /><span className="help-label">Ajuda</span></Button>
+          </div>
+          <PhaseHelp key={`help-${level.id}`} level={level} mode={help} onClose={() => { setHelp(null); helpButtonRef.current?.focus() }} />
+          <div className="game-workspace"><div className="workbench"><CircuitEditor key={level.id} rules={level} initialDraft={drafts[level.id]} onDraftChange={draft => { setDrafts(current => ({ ...current, [level.id]: draft })); setResult(null) }} onTest={circuit => {
             const validation = validateSolution(circuit, level)
             setResult(validation)
             if (validation.status === 'passed') { updateProgress({ ...progress, completed: [...new Set([...completed, level.id])].sort((a, b) => a - b) }); setScreen('success') }

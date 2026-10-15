@@ -186,9 +186,7 @@ main > section { width: 100%; flex: 1 0 auto; max-width: 1240px; margin-inline: 
 .mission-heading { display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); flex-shrink: 0; }
 .mission-heading .eyebrow { font-size: var(--font-small); margin-bottom: var(--space-2); }
 .mission-heading p { font-size: var(--font-label); color: var(--text-muted); margin-top: var(--space-2); }
-.mission-navigation { display: flex; align-items: center; gap: var(--space-1); font-size: var(--font-small); color: var(--text-muted); font-variant-numeric: tabular-nums; }
-.mission-navigation button { width: 44px; padding: 0; }
-.mobile-workspace-tabs, .guide-mobile-tabs { display: none; }
+.guide-mobile-tabs { display: none; }
 .game-workspace { flex: 1; min-height: 0; display: grid; grid-template-columns: 320px minmax(0, 1fr); gap: var(--space-6); }
 .lesson-panel { min-height: 0; display: flex; flex-direction: column; border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--surface); overflow: hidden; }
 .lesson-tabs { display: flex; padding-inline: var(--space-3); border-bottom: 1px solid var(--border); flex-shrink: 0; }
@@ -219,7 +217,6 @@ main > section { width: 100%; flex: 1 0 auto; max-width: 1240px; margin-inline: 
 .editor-section { height: 100%; min-height: 0; position: relative; display: flex; flex-direction: column; }
 .editor-toolbar { display: flex; align-items: center; gap: var(--space-2); padding: var(--space-3); border: 1px solid var(--border); border-bottom: 0; border-radius: var(--radius-md) var(--radius-md) 0 0; background: var(--surface); flex-shrink: 0; }
 .palette-label { font-size: var(--font-small); color: var(--text-muted); }
-.editor-back { order: 5; padding-inline: var(--space-2); }
 .gate-palette { display: flex; flex: 1; min-width: 0; flex-wrap: wrap; gap: var(--space-2); }
 .gate-palette button { font-size: var(--font-small); gap: var(--space-1); padding-inline: 10px; }
 .gate-count { margin-left: auto; color: var(--text-muted); font-size: var(--font-small); white-space: nowrap; font-variant-numeric: tabular-nums; }
@@ -342,7 +339,6 @@ th { background: var(--surface-subtle); font-weight: 600; }
   .game-workspace { grid-template-columns: 288px minmax(0, 1fr); gap: var(--space-4); }
   .palette-label { display: none; }
   .gate-palette button { padding-inline: 8px; }
-  .editor-back { width: 44px; padding: 0; font-size: 0; gap: 0; }
   .level-card { padding: var(--space-4); grid-template-columns: 72px minmax(0, 1fr) 130px 160px; gap: var(--space-1) var(--space-4); }
 }
 @media (min-width: 761px) and (max-width: 1000px) {
@@ -403,18 +399,14 @@ th { background: var(--surface-subtle); font-weight: 600; }
   .mission-heading p { font-size: var(--font-small); margin-top: var(--space-1); }
   .mission-heading .eyebrow { font-size: var(--font-small); margin-bottom: var(--space-1); letter-spacing: .025em; }
   .mission-heading .eyebrow > span { display: none; }
-  .mission-navigation { gap: 0; }
-  .mission-navigation > span { display: none; }
-  .mobile-workspace-tabs, .guide-mobile-tabs { display: flex; gap: var(--space-2); padding: var(--space-1); border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface-subtle); flex-shrink: 0; }
-  .mobile-workspace-tabs > button, .guide-mobile-tabs > button { display: flex; align-items: center; justify-content: center; gap: 6px; flex: 1; min-width: 0; min-height: 44px; overflow-wrap: anywhere; border-radius: 4px; font-size: var(--font-small); color: var(--text-muted); }
-  .mobile-workspace-tabs > button:hover, .guide-mobile-tabs > button:hover { color: var(--text); }
-  .mobile-workspace-tabs > button[aria-pressed='true'], .guide-mobile-tabs > button[aria-pressed='true'] { background: var(--surface); color: var(--text); font-weight: 700; }
+  .guide-mobile-tabs { display: flex; gap: var(--space-2); padding: var(--space-1); border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface-subtle); flex-shrink: 0; }
+  .guide-mobile-tabs > button { display: flex; align-items: center; justify-content: center; gap: 6px; flex: 1; min-width: 0; min-height: 44px; overflow-wrap: anywhere; border-radius: 4px; font-size: var(--font-small); color: var(--text-muted); }
+  .guide-mobile-tabs > button:hover { color: var(--text); }
+  .guide-mobile-tabs > button[aria-pressed='true'] { background: var(--surface); color: var(--text); font-weight: 700; }
   .game-workspace { display: flex; gap: 0; }
   .game-workspace > * { width: 100%; }
-  .mobile-build .lesson-panel, .mobile-learn .workbench { display: none; }
   .lesson-content p { font-size: 1rem; }
   .editor-toolbar { gap: 6px; padding: var(--space-2); }
-  .editor-back { display: none; }
   .gate-palette { gap: var(--space-2); }
   .gate-palette button { padding: 8px; }
   .gate-palette button > svg:first-child { display: none; }
@@ -450,7 +442,6 @@ th { background: var(--surface-subtle); font-weight: 600; }
   .header-progress { font-size: var(--font-small); }
   .mobile-brand { font-size: 1rem; }
   .mission-heading h1 { font-size: 1.25rem; }
-  .mission-navigation button { width: 32px; }
   .gate-palette button { padding-inline: 6px; }
   .guide-playground { padding: var(--space-4); }
   .guide-pagination > button { width: 36px; }
@@ -468,4 +459,94 @@ th { background: var(--surface-subtle); font-weight: 600; }
 }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition: none !important; animation: none !important; scroll-behavior: auto !important; }
+}
+
+/* Play mode gives the entire application frame to the puzzle. */
+.is-playing.app-shell { padding: 0; }
+.is-playing .app-sidebar, .is-playing .app-header { display: none; }
+.is-playing main { padding: 0; overflow: auto; }
+.is-playing .storage-notice { margin: 0; border-radius: 0; }
+.is-playing .game-screen { max-width: none; margin: 0; height: 100%; min-height: 360px; flex: 1; gap: 0; }
+.is-playing .mission-heading { padding: 12px 24px; gap: 20px; background: var(--surface); border-bottom: 1px solid var(--border); }
+.phase-title { flex: 1; min-width: 0; }
+.is-playing .mission-heading h1 { font-size: clamp(1rem, 1.8vw, 1.375rem); letter-spacing: -.025em; }
+.is-playing .mission-heading .eyebrow { font-size: var(--font-small); margin-bottom: 4px; }
+.phase-back { padding-inline: 8px; }
+.is-playing .game-workspace { display: flex; padding: 12px 20px 0; gap: 0; }
+.is-playing .workbench { width: 100%; flex: 1; }
+.is-playing .editor-toolbar { padding: 8px 12px; }
+.is-playing .palette-label { display: block; }
+.is-playing .gate-palette { flex-wrap: wrap; }
+.is-playing .gate-palette button > svg:first-child { display: block; }
+.is-playing .circuit-canvas { min-height: 150px; background: var(--background); }
+.is-playing .signal-node { box-shadow: 0 3px 0 #2628250d; }
+.is-playing .signal-node.gate { background: var(--surface); border-top: 3px solid var(--accent); }
+.is-playing .signal-node.output { border-top: 3px solid var(--signal); }
+.workbench-footer { position: relative; display: flex; align-items: center; flex-wrap: wrap; gap: 8px 20px; padding: 12px 0 max(12px, env(safe-area-inset-bottom)); }
+.is-playing .editor-status { padding: 0; gap: 12px; }
+.is-playing .input-controls { display: none; }
+.is-playing .connection-tools { border: 0; background: transparent; font-size: var(--font-small); }
+.is-playing .connection-tools summary { padding: 12px 4px; }
+.is-playing .connection-tools[open] { left: 0; right: auto; bottom: 100%; width: min(520px, 100%); max-height: min(65dvh, 540px); padding: 20px; background: var(--surface); border: 1px solid var(--border-control); }
+.is-playing .editor-actions { margin-left: auto; padding: 0; gap: 12px; }
+.is-playing .editor-actions > button:first-child { padding: 10px; }
+.is-playing .connection-message { position: absolute; bottom: calc(100% + 12px); left: 12px; max-width: min(420px, calc(100% - 160px)); margin: 0; min-height: 0; pointer-events: none; z-index: 7; }
+.is-playing .connection-message.has-message { padding: 10px 14px; border: 1px solid var(--border); border-radius: var(--radius-sm); box-shadow: var(--shadow-overlay); background: var(--surface); color: var(--text); }
+.is-playing .feedback-overlay { top: 76px; max-height: calc(100% - 160px); }
+.phase-help { position: fixed; inset: 0; margin: auto; padding: 0; width: min(560px, calc(100% - 32px)); max-height: calc(100dvh - 32px); color: var(--text); background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); box-shadow: var(--shadow-overlay); overflow: auto; overscroll-behavior: contain; }
+.phase-help::backdrop { background: #26282566; }
+.phase-help-heading { position: sticky; top: 0; z-index: 3; background: var(--surface); padding: 28px 56px 20px 24px; }
+.phase-help-heading .eyebrow { color: var(--accent); }
+.phase-help-heading h2 { font-size: 1.5rem; }
+.phase-intro-copy { padding: 0 24px 28px; }
+.phase-intro-copy > p { font-size: 1rem; }
+.phase-intro-copy .initial-hint { margin-top: 16px; color: var(--text-muted); font-size: var(--font-label); }
+.phase-intro-copy > button { margin-top: 24px; }
+.phase-material .lesson-panel { border: 0; border-radius: 0; }
+.phase-material .lesson-content { overflow: visible; }
+.phase-material .lesson-bottom { display: none; }
+[hidden] { display: none !important; }
+@media (max-width: 760px) {
+  .is-playing .mission-heading { padding: 8px 12px; gap: 8px; }
+  .is-playing .mission-heading .eyebrow { font-size: .6875rem; letter-spacing: .02em; }
+  .is-playing .phase-back { width: 44px; padding: 0; }
+  .phase-back > span, .help-label { display: none; }
+  .is-playing .mission-heading > button:last-child { padding: 10px; }
+  .is-playing .game-workspace { padding: 8px 8px 0; }
+  .is-playing .editor-toolbar { padding: 6px 8px; }
+  .is-playing .palette-label { display: none; }
+  .is-playing .gate-palette { gap: 4px; }
+  .is-playing .gate-palette button { padding: 8px; }
+  .is-playing .gate-palette button > svg:first-child { display: none; }
+  .is-playing .gate-count { display: none; }
+  .workbench-footer { gap: 4px 8px; padding-top: 4px; }
+  .is-playing .editor-status { width: 100%; justify-content: space-between; }
+  .is-playing .input-controls { display: flex; gap: 4px; }
+  .is-playing .input-controls > button { min-width: 36px; min-height: 44px; }
+  .is-playing .connection-tools { flex: 1; min-width: 0; }
+  .is-playing .connection-tools summary { font-size: .6875rem; overflow-wrap: anywhere; }
+  .is-playing .editor-actions { gap: 4px; }
+  .is-playing .editor-actions > button { padding: 10px; }
+  .is-playing .editor-actions > button:first-child > span { display: none; }
+  .is-playing .connection-tools[open] { width: 100%; max-height: 60dvh; }
+  .is-playing .connection-message { left: 8px; bottom: calc(100% + 8px); max-width: calc(100% - 156px); font-size: .75rem; }
+  .phase-help-heading { padding: 24px 52px 16px 20px; }
+  .phase-intro-copy { padding: 0 20px 24px; }
+}
+@media (max-width: 760px) {
+  .is-playing .signal-node { width: 120px; padding: 12px; }
+  .is-playing .signal-node.gate, .is-playing .signal-node.output { padding-left: 20px; }
+  .is-playing .node-caption, .is-playing .toggle-input { display: none; }
+  .is-playing .node-body { margin-top: 12px; }
+  .is-playing .node-body strong { font-size: 1rem; }
+  .is-playing .node-body strong > svg { display: none; }
+  .is-playing .node-body .signal-value { min-width: 24px; min-height: 28px; }
+}
+@media (max-height: 600px) and (min-width: 761px) {
+  .is-playing .mission-heading { padding: 6px 16px; }
+  .is-playing .mission-heading h1 { font-size: 1.125rem; }
+  .is-playing .mission-heading .eyebrow { margin-bottom: 2px; font-size: .6875rem; }
+  .is-playing .game-workspace { padding-top: 6px; }
+  .is-playing .editor-toolbar { padding-block: 6px; }
+  .is-playing .workbench-footer { padding-block: 6px; }
 }

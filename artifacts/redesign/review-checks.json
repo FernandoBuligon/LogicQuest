@@ -1,0 +1,991 @@
+[
+  {
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "screen": "home",
+    "errors": [],
+    "horizontal": false,
+    "mainHorizontal": false
+  },
+  {
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "screen": "game",
+    "errors": [],
+    "horizontal": false,
+    "mainHorizontal": false
+  },
+  {
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "screen": "learn",
+    "errors": [],
+    "horizontal": false,
+    "mainHorizontal": false
+  },
+  {
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "screen": "truth-table",
+    "errors": [],
+    "horizontal": false,
+    "mainHorizontal": false
+  },
+  {
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "screen": "lesson",
+    "errors": [],
+    "horizontal": false,
+    "mainHorizontal": false
+  },
+  {
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "screen": "success",
+    "errors": [],
+    "horizontal": false,
+    "mainHorizontal": false
+  },
+  {
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "screen": "success-table",
+    "errors": [],
+    "horizontal": false,
+    "mainHorizontal": false
+  },
+  {
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "screen": "levels",
+    "errors": [],
+    "horizontal": false,
+    "mainHorizontal": false
+  },
+  {
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "screen": "challenges",
+    "errors": [],
+    "horizontal": false,
+    "mainHorizontal": false
+  },
+  {
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "screen": "guide",
+    "errors": [],
+    "horizontal": false,
+    "mainHorizontal": false
+  },
+  {
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "screen": "reset",
+    "errors": [],
+    "horizontal": false,
+    "mainHorizontal": false
+  },
+  {
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "screen": "advanced",
+    "mainHorizontal": false,
+    "toolbarHorizontal": false
+  },
+  {
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "screen": "connection-keyboard",
+    "closed": true,
+    "summaryFocused": true
+  },
+  {
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "screen": "text200",
+    "mainHorizontal": false,
+    "horizontal": false
+  },
+  {
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    },
+    "screen": "home",
+    "errors": [],
+    "horizontal": false,
+    "mainHorizontal": false
+  },
+  {
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    },
+    "screen": "game",
+    "errors": [],
+    "horizontal": false,
+    "mainHorizontal": false
+  },
+  {
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    },
+    "screen": "learn",
+    "errors": [],
+    "horizontal": false,
+    "mainHorizontal": false
+  },
+  {
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    },
+    "screen": "truth-table",
+    "errors": [],
+    "horizontal": false,
+    "mainHorizontal": false
+  },
+  {
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    },
+    "screen": "lesson",
+    "errors": [],
+    "horizontal": false,
+    "mainHorizontal": false
+  },
+  {
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    },
+    "screen": "success",
+    "errors": [],
+    "horizontal": false,
+    "mainHorizontal": false
+  },
+  {
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    },
+    "screen": "success-table",
+    "errors": [],
+    "horizontal": false,
+    "mainHorizontal": false
+  },
+  {
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    },
+    "screen": "levels",
+    "errors": [],
+    "horizontal": false,
+    "mainHorizontal": false
+  },
+  {
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    },
+    "screen": "challenges",
+    "errors": [],
+    "horizontal": false,
+    "mainHorizontal": false
+  },
+  {
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    },
+    "screen": "guide",
+    "errors": [],
+    "horizontal": false,
+    "mainHorizontal": false
+  },
+  {
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    },
+    "screen": "reset",
+    "errors": [],
+    "horizontal": false,
+    "mainHorizontal": false
+  },
+  {
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    },
+    "screen": "advanced",
+    "mainHorizontal": false,
+    "toolbarHorizontal": false
+  },
+  {
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    },
+    "screen": "connection-keyboard",
+    "closed": true,
+    "summaryFocused": true
+  },
+  {
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    },
+    "screen": "text200",
+    "mainHorizontal": false,
+    "horizontal": false
+  },
+  {
+    "viewport": {
+      "width": 768,
+      "height": 1024
+    },
+    "screen": "home",
+    "errors": [],
+    "horizontal": false,
+    "mainHorizontal": false
+  },
+  {
+    "viewport": {
+      "width": 768,
+      "height": 1024
+    },
+    "screen": "game",
+    "errors": [],
+    "horizontal": false,
+    "mainHorizontal": false
+  },
+  {
+    "viewport": {
+      "width": 768,
+      "height": 1024
+    },
+    "screen": "learn",
+    "errors": [],
+    "horizontal": false,
+    "mainHorizontal": false
+  },
+  {
+    "viewport": {
+      "width": 768,
+      "height": 1024
+    },
+    "screen": "truth-table",
+    "errors": [],
+    "horizontal": false,
+    "mainHorizontal": false
+  },
+  {
+    "viewport": {
+      "width": 768,
+      "height": 1024
+    },
+    "screen": "lesson",
+    "errors": [],
+    "horizontal": false,
+    "mainHorizontal": false
+  },
+  {
+    "viewport": {
+      "width": 768,
+      "height": 1024
+    },
+    "screen": "success",
+    "errors": [],
+    "horizontal": false,
+    "mainHorizontal": false
+  },
+  {
+    "viewport": {
+      "width": 768,
+      "height": 1024
+    },
+    "screen": "success-table",
+    "errors": [],
+    "horizontal": false,
+    "mainHorizontal": false
+  },
+  {
+    "viewport": {
+      "width": 768,
+      "height": 1024
+    },
+    "screen": "levels",
+    "errors": [],
+    "horizontal": false,
+    "mainHorizontal": false
+  },
+  {
+    "viewport": {
+      "width": 768,
+      "height": 1024
+    },
+    "screen": "challenges",
+    "errors": [],
+    "horizontal": false,
+    "mainHorizontal": false
+  },
+  {
+    "viewport": {
+      "width": 768,
+      "height": 1024
+    },
+    "screen": "guide",
+    "errors": [],
+    "horizontal": false,
+    "mainHorizontal": false
+  },
+  {
+    "viewport": {
+      "width": 768,
+      "height": 1024
+    },
+    "screen": "reset",
+    "errors": [],
+    "horizontal": false,
+    "mainHorizontal": false
+  },
+  {
+    "viewport": {
+      "width": 768,
+      "height": 1024
+    },
+    "screen": "advanced",
+    "mainHorizontal": false,
+    "toolbarHorizontal": false
+  },
+  {
+    "viewport": {
+      "width": 768,
+      "height": 1024
+    },
+    "screen": "connection-keyboard",
+    "closed": true,
+    "summaryFocused": true
+  },
+  {
+    "viewport": {
+      "width": 768,
+      "height": 1024
+    },
+    "screen": "text200",
+    "mainHorizontal": false,
+    "horizontal": false
+  },
+  {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "screen": "home",
+    "errors": [],
+    "horizontal": false,
+    "mainHorizontal": false
+  },
+  {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "screen": "game",
+    "errors": [],
+    "horizontal": false,
+    "mainHorizontal": false
+  },
+  {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "screen": "learn",
+    "errors": [],
+    "horizontal": false,
+    "mainHorizontal": false
+  },
+  {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "screen": "truth-table",
+    "errors": [],
+    "horizontal": false,
+    "mainHorizontal": false
+  },
+  {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "screen": "lesson",
+    "errors": [],
+    "horizontal": false,
+    "mainHorizontal": false
+  },
+  {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "screen": "success",
+    "errors": [],
+    "horizontal": false,
+    "mainHorizontal": false
+  },
+  {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "screen": "success-table",
+    "errors": [],
+    "horizontal": false,
+    "mainHorizontal": false
+  },
+  {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "screen": "levels",
+    "errors": [],
+    "horizontal": false,
+    "mainHorizontal": false
+  },
+  {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "screen": "challenges",
+    "errors": [],
+    "horizontal": false,
+    "mainHorizontal": false
+  },
+  {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "screen": "guide",
+    "errors": [],
+    "horizontal": false,
+    "mainHorizontal": false
+  },
+  {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "screen": "explorer",
+    "errors": [],
+    "horizontal": false,
+    "mainHorizontal": false
+  },
+  {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "screen": "reset",
+    "errors": [],
+    "horizontal": false,
+    "mainHorizontal": false
+  },
+  {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "screen": "advanced",
+    "mainHorizontal": false,
+    "toolbarHorizontal": false
+  },
+  {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "screen": "connection-keyboard",
+    "closed": true,
+    "summaryFocused": true
+  },
+  {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "screen": "text200",
+    "mainHorizontal": false,
+    "horizontal": false
+  },
+  {
+    "viewport": {
+      "width": 375,
+      "height": 812
+    },
+    "screen": "home",
+    "errors": [],
+    "horizontal": false,
+    "mainHorizontal": false
+  },
+  {
+    "viewport": {
+      "width": 375,
+      "height": 812
+    },
+    "screen": "game",
+    "errors": [],
+    "horizontal": false,
+    "mainHorizontal": false
+  },
+  {
+    "viewport": {
+      "width": 375,
+      "height": 812
+    },
+    "screen": "learn",
+    "errors": [],
+    "horizontal": false,
+    "mainHorizontal": false
+  },
+  {
+    "viewport": {
+      "width": 375,
+      "height": 812
+    },
+    "screen": "truth-table",
+    "errors": [],
+    "horizontal": false,
+    "mainHorizontal": false
+  },
+  {
+    "viewport": {
+      "width": 375,
+      "height": 812
+    },
+    "screen": "lesson",
+    "errors": [],
+    "horizontal": false,
+    "mainHorizontal": false
+  },
+  {
+    "viewport": {
+      "width": 375,
+      "height": 812
+    },
+    "screen": "success",
+    "errors": [],
+    "horizontal": false,
+    "mainHorizontal": false
+  },
+  {
+    "viewport": {
+      "width": 375,
+      "height": 812
+    },
+    "screen": "success-table",
+    "errors": [],
+    "horizontal": false,
+    "mainHorizontal": false
+  },
+  {
+    "viewport": {
+      "width": 375,
+      "height": 812
+    },
+    "screen": "levels",
+    "errors": [],
+    "horizontal": false,
+    "mainHorizontal": false
+  },
+  {
+    "viewport": {
+      "width": 375,
+      "height": 812
+    },
+    "screen": "challenges",
+    "errors": [],
+    "horizontal": false,
+    "mainHorizontal": false
+  },
+  {
+    "viewport": {
+      "width": 375,
+      "height": 812
+    },
+    "screen": "guide",
+    "errors": [],
+    "horizontal": false,
+    "mainHorizontal": false
+  },
+  {
+    "viewport": {
+      "width": 375,
+      "height": 812
+    },
+    "screen": "explorer",
+    "errors": [],
+    "horizontal": false,
+    "mainHorizontal": false
+  },
+  {
+    "viewport": {
+      "width": 375,
+      "height": 812
+    },
+    "screen": "reset",
+    "errors": [],
+    "horizontal": false,
+    "mainHorizontal": false
+  },
+  {
+    "viewport": {
+      "width": 375,
+      "height": 812
+    },
+    "screen": "advanced",
+    "mainHorizontal": false,
+    "toolbarHorizontal": false
+  },
+  {
+    "viewport": {
+      "width": 375,
+      "height": 812
+    },
+    "screen": "connection-keyboard",
+    "closed": true,
+    "summaryFocused": true
+  },
+  {
+    "viewport": {
+      "width": 375,
+      "height": 812
+    },
+    "screen": "text200",
+    "mainHorizontal": false,
+    "horizontal": false
+  },
+  {
+    "viewport": {
+      "width": 320,
+      "height": 568
+    },
+    "screen": "home",
+    "errors": [],
+    "horizontal": false,
+    "mainHorizontal": false
+  },
+  {
+    "viewport": {
+      "width": 320,
+      "height": 568
+    },
+    "screen": "game",
+    "errors": [],
+    "horizontal": false,
+    "mainHorizontal": false
+  },
+  {
+    "viewport": {
+      "width": 320,
+      "height": 568
+    },
+    "screen": "learn",
+    "errors": [],
+    "horizontal": false,
+    "mainHorizontal": false
+  },
+  {
+    "viewport": {
+      "width": 320,
+      "height": 568
+    },
+    "screen": "truth-table",
+    "errors": [],
+    "horizontal": false,
+    "mainHorizontal": false
+  },
+  {
+    "viewport": {
+      "width": 320,
+      "height": 568
+    },
+    "screen": "lesson",
+    "errors": [],
+    "horizontal": false,
+    "mainHorizontal": false
+  },
+  {
+    "viewport": {
+      "width": 320,
+      "height": 568
+    },
+    "screen": "success",
+    "errors": [],
+    "horizontal": false,
+    "mainHorizontal": false
+  },
+  {
+    "viewport": {
+      "width": 320,
+      "height": 568
+    },
+    "screen": "success-table",
+    "errors": [],
+    "horizontal": false,
+    "mainHorizontal": false
+  },
+  {
+    "viewport": {
+      "width": 320,
+      "height": 568
+    },
+    "screen": "levels",
+    "errors": [],
+    "horizontal": false,
+    "mainHorizontal": false
+  },
+  {
+    "viewport": {
+      "width": 320,
+      "height": 568
+    },
+    "screen": "challenges",
+    "errors": [],
+    "horizontal": false,
+    "mainHorizontal": false
+  },
+  {
+    "viewport": {
+      "width": 320,
+      "height": 568
+    },
+    "screen": "guide",
+    "errors": [],
+    "horizontal": false,
+    "mainHorizontal": false
+  },
+  {
+    "viewport": {
+      "width": 320,
+      "height": 568
+    },
+    "screen": "explorer",
+    "errors": [],
+    "horizontal": false,
+    "mainHorizontal": false
+  },
+  {
+    "viewport": {
+      "width": 320,
+      "height": 568
+    },
+    "screen": "reset",
+    "errors": [],
+    "horizontal": false,
+    "mainHorizontal": false
+  },
+  {
+    "viewport": {
+      "width": 320,
+      "height": 568
+    },
+    "screen": "advanced",
+    "mainHorizontal": false,
+    "toolbarHorizontal": false
+  },
+  {
+    "viewport": {
+      "width": 320,
+      "height": 568
+    },
+    "screen": "connection-keyboard",
+    "closed": true,
+    "summaryFocused": true
+  },
+  {
+    "viewport": {
+      "width": 320,
+      "height": 568
+    },
+    "screen": "text200",
+    "mainHorizontal": false,
+    "horizontal": false
+  },
+  {
+    "viewport": {
+      "width": 844,
+      "height": 390
+    },
+    "screen": "home",
+    "errors": [],
+    "horizontal": false,
+    "mainHorizontal": false
+  },
+  {
+    "viewport": {
+      "width": 844,
+      "height": 390
+    },
+    "screen": "game",
+    "errors": [],
+    "horizontal": false,
+    "mainHorizontal": false
+  },
+  {
+    "viewport": {
+      "width": 844,
+      "height": 390
+    },
+    "screen": "learn",
+    "errors": [],
+    "horizontal": false,
+    "mainHorizontal": false
+  },
+  {
+    "viewport": {
+      "width": 844,
+      "height": 390
+    },
+    "screen": "truth-table",
+    "errors": [],
+    "horizontal": false,
+    "mainHorizontal": false
+  },
+  {
+    "viewport": {
+      "width": 844,
+      "height": 390
+    },
+    "screen": "lesson",
+    "errors": [],
+    "horizontal": false,
+    "mainHorizontal": false
+  },
+  {
+    "viewport": {
+      "width": 844,
+      "height": 390
+    },
+    "screen": "success",
+    "errors": [],
+    "horizontal": false,
+    "mainHorizontal": false
+  },
+  {
+    "viewport": {
+      "width": 844,
+      "height": 390
+    },
+    "screen": "success-table",
+    "errors": [],
+    "horizontal": false,
+    "mainHorizontal": false
+  },
+  {
+    "viewport": {
+      "width": 844,
+      "height": 390
+    },
+    "screen": "levels",
+    "errors": [],
+    "horizontal": false,
+    "mainHorizontal": false
+  },
+  {
+    "viewport": {
+      "width": 844,
+      "height": 390
+    },
+    "screen": "challenges",
+    "errors": [],
+    "horizontal": false,
+    "mainHorizontal": false
+  },
+  {
+    "viewport": {
+      "width": 844,
+      "height": 390
+    },
+    "screen": "guide",
+    "errors": [],
+    "horizontal": false,
+    "mainHorizontal": false
+  },
+  {
+    "viewport": {
+      "width": 844,
+      "height": 390
+    },
+    "screen": "reset",
+    "errors": [],
+    "horizontal": false,
+    "mainHorizontal": false
+  },
+  {
+    "viewport": {
+      "width": 844,
+      "height": 390
+    },
+    "screen": "advanced",
+    "mainHorizontal": false,
+    "toolbarHorizontal": false
+  },
+  {
+    "viewport": {
+      "width": 844,
+      "height": 390
+    },
+    "screen": "connection-keyboard",
+    "closed": true,
+    "summaryFocused": true
+  },
+  {
+    "viewport": {
+      "width": 844,
+      "height": 390
+    },
+    "screen": "text200",
+    "mainHorizontal": false,
+    "horizontal": false
+  }
+]

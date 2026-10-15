@@ -1,88 +1,89 @@
-# Redesign do Logic Quest
+# Redesign do LogicQuest
 
-## Análise e direção visual
+## Análise da experiência anterior
 
-O redesign parte da aplicação existente com 11 etapas. Regras, conteúdo didático, desbloqueio, persistência, montagem e validação de circuitos foram preservados.
+A revisão começou por `App.tsx`, `LessonPanel.tsx`, `CircuitEditor.tsx`, `global.css`, pelas 11 fases, pelo modelo de montagem, avaliação, validação, persistência e testes. As capturas anteriores em `artifacts/redesign/` mostravam a bancada dividindo espaço com material didático e navegação global.
 
-| Problema observado | Decisão aplicada |
+| Problema | Mudança |
 | --- | --- |
-| Vários títulos e mensagens promocionais na abertura | Uma apresentação, uma ação principal e uma indicação da próxima etapa |
-| Progresso repetido na lateral e no cabeçalho | Um indicador discreto no cabeçalho |
-| Badges, brilhos, cartões motivacionais e ilustração inclinada | Remoção da decoração; manutenção do simulador funcional |
-| Cada porta e painel com uma cor diferente | Superfícies neutras; tipos de porta identificados pelo nome e símbolo |
-| Textos de 7–11 px para acomodar todo o conteúdo | Corpo de 16 px, textos auxiliares de 12–14 px e rolagem quando necessária |
-| Cartões grandes e repetidos na trilha | Lista de etapas no desktop; blocos em coluna no celular |
-| Controles de zoom cobrindo interruptores | Controles horizontais no canto inferior direito |
+| Menu global, cabeçalho, título e navegação de etapas consumiam largura e altura | Modo de jogo ocupa o quadro da aplicação, com cabeçalho compacto e retorno explícito às fases |
+| Material didático permanentemente ao lado do circuito | Apresentação breve ao entrar; missão, explicação e tabela acessíveis em Ajuda |
+| Alternância entre aprender e montar no celular | A bancada permanece visível como tela principal; informações abrem temporariamente |
+| Controles distribuídos em várias faixas | Paleta acima do canvas; conexões, simulação e ações em rodapé compacto |
+| Entradas duplicadas no desktop | Interruptores no próprio circuito; controles externos de simulação aparecem no celular |
+| Texto de conexão ocupava uma faixa mesmo sem necessidade | Feedback temporário sobre a borda inferior da bancada, anunciado por região viva |
+| Adicionar uma porta reenquadrava todos os componentes | Zoom preservado durante a montagem; nova porta procura espaço livre próximo ao centro visível |
+| Enquadramento podia diminuir demais peças em circuitos grandes | Ajuste inicial e botão de enquadramento limitados a zoom mínimo de 65%; zoom manual até 40% |
+| Componentes fixos distantes e grandes no celular | Disposição inicial compacta e nós menores, mantendo nomes, sinais e pontos de conexão |
 
-A direção é um laboratório de estudo contemporâneo: tipografia geométrica, contraste, linguagem direta e espaço entre grupos de informação. A personalidade vem da composição e do acento terracota. Não há gradientes, animações decorativas nem dependências novas.
+A direção mantém a identidade existente: Manrope local, superfícies neutras, acento terracota, verde reservado aos sinais e feedback funcional. A personalidade de puzzle vem da bancada dominante e da interação com peças e fios. A skill `frontend-design` orientou a hierarquia. Não foram adicionadas dependências, animações decorativas ou novas mecânicas.
 
-As skills `ui-ux-pro-max` e `frontend-design` orientaram a hierarquia, a linguagem visual e os componentes. As buscas da primeira skill confirmaram a direção minimalista; recomendações automáticas de tipografia infantil e paletas com várias cores foram descartadas por conflitarem com o público e o pedido. A revisão final usou as [Web Interface Guidelines](https://raw.githubusercontent.com/vercel-labs/web-interface-guidelines/main/command.md), recuperadas durante a revisão.
+## Fluxo e responsabilidades
 
-## Design system
+1. Selecionar uma fase abre uma apresentação com nome, objetivo e primeira orientação nos tutoriais.
+2. **Entendi, começar**, o botão de fechar ou Escape liberam a bancada.
+3. O jogador adiciona portas, conecta fios, altera entradas e usa **Testar circuito**.
+4. **Ajuda** abre o material existente em abas: Missão, Aprender e Tabela. Dicas continuam progressivas, e a reflexão pode revelar sua explicação.
+5. Resultado incompleto ou incorreto aparece em painel fechável. Aprovação mantém a tela de conquista e a ação de próxima fase.
 
-Os tokens compartilhados estão em `src/styles/global.css`; o componente `Button` usa variantes semânticas, sem cores próprias.
+`App` controla a abertura da ajuda e a navegação. `PhaseHelp` apresenta um `dialog` nativo, com contenção de foco, fundo inerte, Escape e restauração do foco ao botão de ajuda. Seu cabeçalho mantém o fechamento acessível durante a rolagem. `LessonPanel` conserva conteúdo e comportamento existentes, permanecendo montado dentro da ajuda para preservar aba, dicas e reflexão.
+
+O editor é um irmão do diálogo: abrir e fechar ajuda não o desmonta, nem altera montagem, seleção, sinais ou viewport. As montagens continuam preservadas em memória ao navegar entre telas; o progresso das fases continua salvo em localStorage. Não foi acrescentada persistência de circuitos após recarregar.
+
+`CircuitEditor` mantém XYFlow, exclusão por teclado, movimento de portas pelas setas, arraste e conexão por seleção. O painel de conexões fica fechado até ser solicitado, fecha com Escape e devolve o foco ao acionador. A disposição compacta é aplicada ao criar ou reiniciar um circuito em tela estreita; redimensionar não reposiciona portas que o jogador já moveu.
+
+Motor, critérios de validação, portas AND/OR/NOT/XOR, conteúdo das 11 fases, desbloqueio e armazenamento não foram alterados.
+
+## Identidade e acessibilidade
+
+Os tokens compartilhados continuam em `src/styles/global.css`; `Button` mantém variantes semânticas.
 
 | Elemento | Definição |
 | --- | --- |
 | Fundo / superfície | `#f7f7f5` / `#ffffff` |
 | Texto / texto secundário | `#262825` / `#646760` |
-| Acento / fundo de seleção | `#ad462e` / `#f7ebe5` |
-| Sinal ativo e confirmação | `#24664f` / `#e8f1eb`, sempre com texto ou valor |
-| Erro destrutivo | `#b33232` |
-| Limites de controles | `#898d82` |
-| Tipografia | Manrope variável, pesos 400–800, WOFF2 local de aproximadamente 25 KB |
-| Espaçamento | 4, 8, 12, 16, 24, 32 e 48 px |
-| Raios | 6, 10 e 16 px |
-| Interação | Estados discretos de 160 ms, foco visível, suporte a movimento reduzido |
+| Acento / seleção | `#ad462e` / `#f7ebe5` |
+| Sinal ativo / confirmação | `#24664f` / `#e8f1eb`, com valor textual |
+| Erro | `#b33232` |
+| Bordas de controles | `#898d82` |
+| Tipografia | Manrope variável local, pesos 400–800; licença em `public/fonts/OFL-Manrope.txt` |
+| Interação | Alvos de controles principais de 44 px, foco visível e movimento reduzido |
 
-A fonte possui licença OFL incluída em `public/fonts/OFL-Manrope.txt`. É carregada localmente com preload e `font-display: swap`; a aplicação continua independente de fontes e serviços externos em tempo de execução.
+Textos extensos rolam dentro da ajuda. Os controles de zoom permanecem no canto inferior direito do canvas; ferramentas de montagem ficam fora dele. No celular, os botões externos de entrada evitam depender de toques precisos em peças ampliadas/reduzidas. Os nomes acessíveis dos controles e o anúncio de alterações de saída foram preservados.
 
-Contrastes calculados a partir das cores finais:
+## Evidências e reprodução
 
-| Par | Razão |
-| --- | --- |
-| Texto principal / fundo | 13,86:1 |
-| Texto secundário / fundo | 5,36:1 |
-| Texto secundário / branco | 5,75:1 |
-| Acento / branco | 5,69:1 |
-| Acento / seleção suave | 4,87:1 |
-| Sinal ativo / fundo de confirmação | 5,90:1 |
-| Bordas de controles / fundo | 3,16:1 |
+As capturas atualizadas e o verificador estão em `artifacts/redesign/`:
 
-## Telas e evidências
+- Bancada: [desktop](../artifacts/redesign/game-1440.png), [tablet](../artifacts/redesign/game-768.png), [celular](../artifacts/redesign/game-390.png).
+- Apresentação: [desktop](../artifacts/redesign/intro-1440.png), [celular estreito](../artifacts/redesign/intro-320.png).
+- Material sob demanda: [missão](../artifacts/redesign/lesson-390.png), [aprendizado](../artifacts/redesign/learn-390.png), [tabela](../artifacts/redesign/truth-table-390.png).
+- Quatro portas e quatro entradas: [desktop](../artifacts/redesign/advanced-1440.png), [tablet](../artifacts/redesign/advanced-768.png), [celular](../artifacts/redesign/advanced-320.png).
+- Feedback: [circuito incompleto](../artifacts/redesign/feedback-390.png), [aprovação](../artifacts/redesign/success-390.png).
+- Outras telas: [início](../artifacts/redesign/home-1440.png), [fases](../artifacts/redesign/levels-390.png), [guia](../artifacts/redesign/guide-375.png), [texto a 200%](../artifacts/redesign/text-200-320.png).
 
-Foram revisados abertura, trilha e módulos, bancada, missão, aprendizado, tabela-verdade, guia, simulador, conexão por seleção, resultado inválido e aprovação, além da confirmação de reinício.
+Resoluções do verificador: 1440×900, 1280×720, 768×1024, 390×844, 375×812, 320×568 e 844×390. Os E2E incluem 360×640 e redimensionamento da mesma bancada entre desktop, tablet e celular.
 
-As capturas e o verificador reproduzível estão em `artifacts/redesign/`:
+Para reproduzir, com Node compatível com `package.json` e Chromium do Playwright instalado:
 
-- Abertura: [desktop](../artifacts/redesign/home-1440.png) e [celular](../artifacts/redesign/home-390.png).
-- Trilha: [desktop](../artifacts/redesign/levels-1440.png) e [celular](../artifacts/redesign/levels-390.png).
-- Bancada: [desktop](../artifacts/redesign/game-1440.png) e [celular](../artifacts/redesign/game-390.png).
-- Quatro tipos de porta: [tablet](../artifacts/redesign/advanced-768.png) e [celular estreito](../artifacts/redesign/advanced-320.png).
-- Guia: [desktop](../artifacts/redesign/guide-1440.png) e [celular](../artifacts/redesign/guide-375.png).
-- Aprendizado: [explicação](../artifacts/redesign/learn-390.png) e [tabela](../artifacts/redesign/truth-table-390.png).
-- Resultados: [aprovação](../artifacts/redesign/success-390.png) e [circuito incompleto](../artifacts/redesign/feedback-390.png).
-- Acessibilidade: [texto a 200%](../artifacts/redesign/text-200-320.png) e [confirmação](../artifacts/redesign/reset-390.png).
-
-Resoluções: 1440×900, 1280×720, 768×1024, 390×844, 375×812, 320×568 e 844×390. Os E2E também verificam 360×640. Conteúdo extenso rola; a navegação permanece fora da área rolável. No celular, aprender e montar continuam em áreas alternáveis. Os seletores e controles de entrada fora do canvas permitem trabalhar sem arraste preciso.
-
-Para repetir as capturas, execute a aplicação com `npm run dev -- --host 127.0.0.1 --port 5173` e, em outro terminal, `node artifacts/redesign/review.mjs`, com o Chromium do Playwright instalado. `REVIEW_URL` permite apontar o verificador para um servidor de preview. O resultado estruturado fica em `artifacts/redesign/review-checks.json`; o processo retorna erro se encontrar transbordamento, erro JavaScript ou falha nas verificações de foco.
-
-## Validação e auditoria
-
-Resultado final: TypeScript, lint e build de produção aprovados; **71 testes unitários** e **20 testes de navegador** aprovados. Os E2E foram concluídos em duas execuções: 19 testes de interface e o teste independente que percorre as 11 etapas offline. O verificador de capturas registrou **101 verificações em sete resoluções**, sem transbordamentos ou falhas de foco nas condições verificadas.
-
-As verificações cobrem tipos, lint, testes unitários, build de produção, E2E e revisão das capturas. A suíte funcional percorre as 11 etapas offline, recusa circuitos incorretos, verifica simulação, arraste, exclusão, preservação de montagens, armazenamento bloqueado, desbloqueio e reinício. As regressões visuais encontradas ganharam verificações de tabela expandida em 320 px, paleta com quatro portas, texto a 200% e saída do painel de conexões por teclado.
-
-Na revisão foram corrigidos contraste dos limites dos controles, sobreposição entre entradas, posição dos controles de zoom, transbordamento da paleta e da tabela, quebra dos controles com texto ampliado, anúncio de mudanças de saída e ocultação de ícones decorativos para leitores de tela. Mensagens de erro usam nomes como “Porta AND 1”, mantendo os identificadores técnicos fora da experiência do estudante. O painel de conexões fecha com Escape, devolve o foco ao acionador e não permanece sobre outro controle ao receber foco externo. O diálogo de reinício mantém confirmação, Escape, ciclo de Tab e restauração do foco.
-
-Achados remanescentes das Web Interface Guidelines, no formato arquivo:linha:
-
-```text
-src/app/App.tsx:23 - navegação e etapa não têm URLs próprias; estado de tela existente preservado.
-src/app/App.tsx:83 - navegação existente usa botões; não permite abrir destinos em outra aba.
+```sh
+npm run dev -- --host 127.0.0.1 --port 5173
+# Em outro terminal:
+node artifacts/redesign/review.mjs
 ```
 
-Esses itens pertencem à arquitetura de navegação preexistente. Implementar rotas e sincronização de estado com URLs ampliaria o escopo funcional deste redesign. Não foram adicionados roteador, novas telas ou dependências para resolvê-los.
+`REVIEW_URL` aponta para outro servidor. `PLAYWRIGHT_BROWSERS_PATH` pode indicar uma instalação alternativa do Chromium. O relatório é `artifacts/redesign/review-checks.json`; o processo falha ao detectar transbordamento, erro JavaScript, falha de foco nas conexões ou participação do canvas inferior a metade da tela.
 
-A avaliação visual foi feita em Chromium emulado, incluindo movimento reduzido e ampliação de texto. Não equivale a certificação WCAG, teste em aparelhos físicos ou validação pedagógica com estudantes. O canvas continua sujeito ao zoom necessário para circuitos grandes; os controles de simulação e conexão fora do desenho permanecem disponíveis.
+## Validação e limites
+
+Resultado final: `npm run typecheck`, `npm run lint`, `npm test`, `npm run build` e `npm run test:e2e` aprovados: **71 testes unitários e 23 testes de navegador**. O verificador visual concluiu **115 registros em sete resoluções**, sem transbordamento, erros JavaScript ou falhas de foco nas condições verificadas.
+
+O canvas ocupa 74,1% da tela em 1440×900, 67,8% em 390×844, 53,7% em 320×568 e 52,3% em 844×390, medido sem os painéis auxiliares abertos.
+
+A suíte mantém os 71 testes unitários e amplia os testes de navegador para 23: todas as 11 fases são resolvidas offline, com rejeição de soluções incompletas e incorretas, progressão, salvamento, armazenamento bloqueado, conexão por seleção e arraste, exclusão, reinício, navegação e acessibilidade. Novas regressões verificam foco da apresentação, ajuda reaberta sem perder circuito/sinal/zoom/dicas, proporção do canvas, redimensionamento e componentes fixos visíveis no celular.
+
+As capturas são inspecionadas junto dos resultados automatizados; compilar sozinho não encerra a revisão. A avaliação é feita com Chromium emulado, incluindo movimento reduzido e texto ampliado. Não substitui testes em aparelhos físicos, outros navegadores ou observação com estudantes.
+
+Circuitos maiores podem exigir deslocamento da bancada e zoom manual, especialmente no celular e em orientação horizontal. O enquadramento preserva um mínimo de legibilidade e pode deixar parte de um circuito extenso fora da área visível. Conexões e simulação externas continuam disponíveis. Ao redimensionar uma montagem existente, as posições são preservadas; o jogador pode usar Enquadrar circuito para orientar a visualização.
+
+A navegação continua baseada no estado React existente, sem URLs por fase ou roteador. Essas mudanças ampliariam o escopo do redesign.

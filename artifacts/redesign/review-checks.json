@@ -14,6 +14,24 @@
       "width": 1440,
       "height": 900
     },
+    "screen": "intro",
+    "errors": [],
+    "horizontal": false,
+    "mainHorizontal": false
+  },
+  {
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "screen": "workbench-area",
+    "canvasShare": 0.741
+  },
+  {
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
     "screen": "game",
     "errors": [],
     "horizontal": false,
@@ -145,6 +163,24 @@
     "errors": [],
     "horizontal": false,
     "mainHorizontal": false
+  },
+  {
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    },
+    "screen": "intro",
+    "errors": [],
+    "horizontal": false,
+    "mainHorizontal": false
+  },
+  {
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    },
+    "screen": "workbench-area",
+    "canvasShare": 0.68
   },
   {
     "viewport": {
@@ -282,6 +318,24 @@
     "errors": [],
     "horizontal": false,
     "mainHorizontal": false
+  },
+  {
+    "viewport": {
+      "width": 768,
+      "height": 1024
+    },
+    "screen": "intro",
+    "errors": [],
+    "horizontal": false,
+    "mainHorizontal": false
+  },
+  {
+    "viewport": {
+      "width": 768,
+      "height": 1024
+    },
+    "screen": "workbench-area",
+    "canvasShare": 0.754
   },
   {
     "viewport": {
@@ -419,6 +473,24 @@
     "errors": [],
     "horizontal": false,
     "mainHorizontal": false
+  },
+  {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "screen": "intro",
+    "errors": [],
+    "horizontal": false,
+    "mainHorizontal": false
+  },
+  {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "screen": "workbench-area",
+    "canvasShare": 0.678
   },
   {
     "viewport": {
@@ -566,6 +638,24 @@
     "errors": [],
     "horizontal": false,
     "mainHorizontal": false
+  },
+  {
+    "viewport": {
+      "width": 375,
+      "height": 812
+    },
+    "screen": "intro",
+    "errors": [],
+    "horizontal": false,
+    "mainHorizontal": false
+  },
+  {
+    "viewport": {
+      "width": 375,
+      "height": 812
+    },
+    "screen": "workbench-area",
+    "canvasShare": 0.666
   },
   {
     "viewport": {
@@ -713,6 +803,24 @@
     "errors": [],
     "horizontal": false,
     "mainHorizontal": false
+  },
+  {
+    "viewport": {
+      "width": 320,
+      "height": 568
+    },
+    "screen": "intro",
+    "errors": [],
+    "horizontal": false,
+    "mainHorizontal": false
+  },
+  {
+    "viewport": {
+      "width": 320,
+      "height": 568
+    },
+    "screen": "workbench-area",
+    "canvasShare": 0.537
   },
   {
     "viewport": {
@@ -860,6 +968,24 @@
     "errors": [],
     "horizontal": false,
     "mainHorizontal": false
+  },
+  {
+    "viewport": {
+      "width": 844,
+      "height": 390
+    },
+    "screen": "intro",
+    "errors": [],
+    "horizontal": false,
+    "mainHorizontal": false
+  },
+  {
+    "viewport": {
+      "width": 844,
+      "height": 390
+    },
+    "screen": "workbench-area",
+    "canvasShare": 0.523
   },
   {
     "viewport": {

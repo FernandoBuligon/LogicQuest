@@ -1,44 +1,56 @@
 import { test, expect, type Page } from '@playwright/test'
 import { PROGRESS_KEY } from '../../src/storage/progress'
+import { solutions } from '../fixtures/solutions'
 
-test.beforeEach(async ({ page }) => {
-  page.on('pageerror', error => { throw error })
-})
-
+const startLabel = 'Começar a aprender'
+test.beforeEach(async ({ page }) => { page.on('pageerror', error => { throw error }) })
 async function openEditor(page: Page) {
   await page.goto('/')
-  await page.getByRole('button', { name: 'Iniciar missão' }).click()
+  await page.getByRole('button', { name: startLabel }).click()
 }
 async function connect(page: Page, source: string, target: string) {
-  const tools = page.getByText('Conectar por seleção / remover fios')
-  if (!await page.getByLabel('Origem', { exact: true }).isVisible()) await tools.click()
+  if (!await page.getByLabel('Origem', { exact: true }).isVisible()) await page.getByText('Conectar por seleção / remover fios').click()
   await page.getByLabel('Origem', { exact: true }).selectOption({ label: source })
   await page.getByLabel('Destino', { exact: true }).selectOption({ label: target })
   await page.getByRole('button', { name: 'Conectar fio', exact: true }).click()
 }
+async function closeConnections(page: Page) {
+  if (await page.getByRole('button', { name: 'Fechar conexões' }).isVisible()) await page.getByRole('button', { name: 'Fechar conexões' }).click()
+}
+async function solve(page: Page, index: number) {
+  const solution = solutions[index]
+  for (const gate of solution.gates) await page.getByRole('button', { name: gate, exact: true }).click()
+  function label(id: string) { return id === 'output' ? 'Saída' : /^\d+$/.test(id) ? `Porta ${solution.gates[Number(id) - 1]} ${id}` : `Entrada ${id}` }
+  for (const [source, target, input] of solution.wires) await connect(page, label(source), `${label(target)} · entrada ${input}`)
+  await page.getByRole('button', { name: 'Testar circuito' }).click()
+}
+async function expectResponsiveFrame(page: Page) {
+  const overflow = await page.evaluate(() => ({ horizontal: document.documentElement.scrollWidth > innerWidth, vertical: document.documentElement.scrollHeight > innerHeight, mainHorizontal: document.querySelector('main')!.scrollWidth > document.querySelector('main')!.clientWidth + 1 }))
+  // Long lessons scroll in main; the page frame and navigation stay within the viewport.
+  expect(overflow).toEqual({ horizontal: false, vertical: false, mainHorizontal: false })
+}
 
-test('abre a aplicação no navegador', async ({ page }) => {
+test('abre o espaço de aprendizado e experimenta uma porta', async ({ page }) => {
   await page.goto('/')
-  await expect(page.getByRole('heading', { name: 'Logic Quest' })).toBeVisible()
-  await page.screenshot({ path: '/tmp/logicquest-home-desktop.png', fullPage: true })
+  await expect(page.getByRole('heading', { name: 'Entenda a lógica. Conecte suas ideias.' })).toBeVisible()
+  await expect(page.getByText('0 / 11 etapas concluídas')).toBeVisible()
+  await page.getByRole('button', { name: 'Alternar sinal A' }).click()
+  await expect(page.locator('.live-output')).toContainText('1')
+  await expectResponsiveFrame(page)
+  await page.screenshot({ path: '/tmp/logicquest-home-desktop.png' })
 })
 
-test('permite montar em tela menor com controles rotulados', async ({ page }) => {
-  await page.setViewportSize({ width: 390, height: 844 })
+test('monta AND, simula, recusa entrada ocupada e remove fios com a porta', async ({ page }) => {
   await openEditor(page)
   await page.getByRole('button', { name: 'AND', exact: true }).click()
-  await connect(page, 'Entrada A', 'Porta AND 1 · entrada 1')
-  await expect(page.getByRole('status')).toContainText('Fio conectado')
-  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
-  await page.screenshot({ path: '/tmp/logicquest-editor-mobile.png', fullPage: true })
-})
-
-test('monta AND, alterna sinais, rejeita entrada ocupada e remove fios com a porta', async ({ page }) => {
-  await openEditor(page)
-  await page.getByRole('button', { name: 'AND', exact: true }).click()
+  await page.getByRole('button', { name: 'Testar circuito' }).click()
+  await expect(page.getByRole('region', { name: 'Resultado da validação' })).toContainText('Porta AND 1: conecte a entrada 1.')
+  await expect(page.getByRole('region', { name: 'Resultado da validação' })).not.toContainText('gate-and-')
+  await page.getByRole('button', { name: 'Fechar resultado' }).click()
   await connect(page, 'Entrada A', 'Porta AND 1 · entrada 1')
   await connect(page, 'Entrada B', 'Porta AND 1 · entrada 2')
   await connect(page, 'Porta AND 1', 'Saída · entrada 1')
+  await closeConnections(page)
   await expect(page.getByTestId('output-value')).toHaveText('0')
   await page.getByRole('button', { name: 'Alternar entrada A' }).click()
   await expect(page.getByTestId('output-value')).toHaveText('0')
@@ -46,13 +58,37 @@ test('monta AND, alterna sinais, rejeita entrada ocupada e remove fios com a por
   await expect(page.getByTestId('output-value')).toHaveText('1')
   await connect(page, 'Entrada B', 'Porta AND 1 · entrada 1')
   await expect(page.getByRole('status')).toContainText('já tem um fio')
+  await closeConnections(page)
   await page.getByRole('button', { name: 'Remover porta AND' }).click()
   await expect(page.getByTestId('output-value')).toHaveText('?')
+  await page.getByText('Conectar por seleção / remover fios').click()
   await expect(page.getByText('Nenhum fio conectado.')).toBeVisible()
-  await expect(page.getByRole('button', { name: 'Alternar entrada A' })).toBeVisible()
 })
 
-test('recusa ciclos e reinicia o circuito', async ({ page }) => {
+test('simula e conclui o tutorial no celular com controles de toque fora do desenho', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 })
+  await openEditor(page)
+  await page.getByRole('button', { name: 'AND', exact: true }).click()
+  await connect(page, 'Entrada A', 'Porta AND 1 · entrada 1')
+  await connect(page, 'Entrada B', 'Porta AND 1 · entrada 2')
+  await connect(page, 'Porta AND 1', 'Saída · entrada 1')
+  await closeConnections(page)
+  await page.getByRole('button', { name: 'Simular entrada A', exact: true }).click()
+  await expect(page.getByTestId('output-value')).toHaveText('0')
+  await page.getByRole('button', { name: 'Simular entrada B', exact: true }).click()
+  await expect(page.getByTestId('output-value')).toHaveText('1')
+  await expect(page.getByRole('button', { name: 'Testar circuito' })).toBeInViewport({ ratio: 1 })
+  await page.getByRole('button', { name: 'Testar circuito' }).click()
+  await expect(page.getByText('Seu circuito foi aprovado nas 4 combinações possíveis.')).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Próxima fase' })).toBeInViewport({ ratio: 1 })
+  await expectResponsiveFrame(page)
+  await page.setViewportSize({ width: 320, height: 568 })
+  await page.getByText('Ver tabela-verdade testada (4 combinações)').click()
+  await expect(page.getByRole('table')).toBeVisible()
+  await expectResponsiveFrame(page)
+})
+
+test('recusa ciclos e reinicia a montagem', async ({ page }) => {
   await openEditor(page)
   await page.getByRole('button', { name: 'AND', exact: true }).click()
   await connect(page, 'Porta AND 1', 'Porta AND 1 · entrada 1')
@@ -62,119 +98,94 @@ test('recusa ciclos e reinicia o circuito', async ({ page }) => {
   await expect(page.getByRole('button', { name: 'Remover porta AND' })).toHaveCount(0)
 })
 
-test('valida todas as combinações antes de liberar a fase seguinte', async ({ page }) => {
+test('ensina o raciocínio, oferece dicas graduais e tabela antes de testar', async ({ page }) => {
   await openEditor(page)
-  await connect(page, 'Entrada A', 'Saída · entrada 1')
-  await page.getByRole('button', { name: 'Testar circuito' }).click()
-  await expect(page.getByRole('heading', { name: 'Ainda falta um ajuste' })).toBeVisible()
-  await expect(page.getByRole('region', { name: 'Resultado da validação' })).toContainText('A = 1, B = 0')
-  await page.getByRole('button', { name: 'Reiniciar fase' }).click()
-  await page.getByRole('button', { name: 'AND', exact: true }).click()
-  await connect(page, 'Entrada A', 'Porta AND 1 · entrada 1')
-  await connect(page, 'Entrada B', 'Porta AND 1 · entrada 2')
-  await connect(page, 'Porta AND 1', 'Saída · entrada 1')
-  await page.getByRole('button', { name: 'Testar circuito' }).click()
-  await expect(page.getByRole('heading', { name: 'Missão cumprida!' })).toBeVisible()
-  await expect(page.getByText('Seu circuito foi aprovado nas 4 combinações possíveis.')).toBeVisible()
-  await page.getByRole('button', { name: 'Próxima fase' }).click()
-  await expect(page.getByRole('heading', { name: 'Porta de emergência', exact: true })).toBeVisible()
+  await page.getByRole('button', { name: 'Como começar', exact: true }).click()
+  await expect(page.getByText('Adicione uma porta AND na barra acima da bancada.')).toBeVisible()
+  await page.getByRole('tab', { name: 'Aprender', exact: true }).click()
+  await expect(page.getByRole('heading', { name: 'A porta AND · condições simultâneas' })).toBeVisible()
+  await page.getByRole('button', { name: 'Conferir meu raciocínio' }).click()
+  await expect(page.getByRole('status').filter({ hasText: 'Porque AND exige' })).toBeVisible()
+  await page.getByRole('tab', { name: 'Tabela', exact: true }).click()
+  await expect(page.locator('tbody tr')).toHaveCount(4)
+  await expect(page.getByRole('columnheader', { name: 'Saída', exact: true })).toBeVisible()
+  await page.getByRole('tab', { name: 'Tabela', exact: true }).press('Home')
+  await expect(page.getByRole('tab', { name: 'Missão', exact: true })).toBeFocused()
 })
 
-test('recupera progresso e última fase; reinícios têm efeitos separados', async ({ page }) => {
+test('preserva montagens ao navegar e recupera o progresso de onze fases', async ({ page }) => {
   await openEditor(page)
   await page.getByRole('button', { name: 'AND', exact: true }).click()
   await connect(page, 'Entrada A', 'Porta AND 1 · entrada 1')
+  await closeConnections(page)
+  await page.getByRole('button', { name: 'Voltar para a trilha', exact: true }).click()
+  await page.getByRole('button', { name: 'Jogar fase 1', exact: true }).click()
+  await expect(page.getByRole('button', { name: 'Remover porta AND' })).toBeVisible()
   await connect(page, 'Entrada B', 'Porta AND 1 · entrada 2')
   await connect(page, 'Porta AND 1', 'Saída · entrada 1')
   await page.getByRole('button', { name: 'Testar circuito' }).click()
   await page.getByRole('button', { name: 'Próxima fase' }).click()
   await page.reload()
-  await expect(page.getByText('1 / 6 sistemas restaurados')).toBeVisible()
-  await page.getByRole('button', { name: 'Continuar missão' }).click()
+  await expect(page.getByText('1 / 11 etapas concluídas')).toBeVisible()
+  await page.getByRole('button', { name: 'Continuar aprendizado' }).click()
   await expect(page.getByRole('heading', { name: 'Porta de emergência', exact: true })).toBeVisible()
   await page.getByRole('button', { name: 'OR', exact: true }).click()
   await page.getByRole('button', { name: 'Reiniciar fase' }).click()
   await expect(page.getByRole('button', { name: 'Remover porta OR' })).toHaveCount(0)
-  await expect(page.getByText('1 / 6 sistemas restaurados')).toBeVisible()
-  await page.getByRole('button', { name: 'Logic Quest — menu inicial' }).click()
+  await expect(page.getByText('1 / 11 etapas concluídas')).toBeVisible()
   await page.getByRole('button', { name: 'Reiniciar progresso' }).click()
-  await expect(page.getByRole('alertdialog')).toBeVisible()
   await page.getByRole('button', { name: 'Cancelar', exact: true }).click()
-  await expect(page.getByText('1 / 6 sistemas restaurados')).toBeVisible()
+  await expect(page.getByText('1 / 11 etapas concluídas')).toBeVisible()
   await page.getByRole('button', { name: 'Reiniciar progresso' }).click()
   await page.getByRole('button', { name: 'Apagar progresso' }).click()
-  await expect(page.getByText('0 / 6 sistemas restaurados')).toBeVisible()
+  await expect(page.getByText('0 / 11 etapas concluídas')).toBeVisible()
   await page.reload()
   await page.getByRole('button', { name: 'Selecionar fase', exact: true }).click()
   await expect(page.getByRole('button', { name: 'Jogar fase 2', exact: true })).toBeDisabled()
 })
 
-test('preserva montagem ao sair e voltar à fase', async ({ page }) => {
-  await openEditor(page)
-  await page.getByRole('button', { name: 'AND', exact: true }).click()
-  await connect(page, 'Entrada A', 'Porta AND 1 · entrada 1')
-  await page.getByRole('button', { name: 'Voltar', exact: true }).click()
-  await page.getByRole('button', { name: 'Jogar fase 1', exact: true }).click()
-  await expect(page.getByRole('button', { name: 'Remover porta AND' })).toBeVisible()
-  await page.getByText('Conectar por seleção / remover fios').click()
-  await expect(page.getByRole('button', { name: 'Remover fio 1', exact: true })).toBeVisible()
-})
-
-test('recupera dados corrompidos e permite jogar com armazenamento bloqueado', async ({ page }) => {
-  await page.addInitScript(key => { try { localStorage.setItem(key, '{bad') } catch { /* Segundo reload bloqueia storage deliberadamente. */ } }, PROGRESS_KEY)
+test('recupera dados corrompidos e funciona com armazenamento bloqueado', async ({ page }) => {
+  await page.addInitScript(key => { try { localStorage.setItem(key, '{bad') } catch { /* armazenamento bloqueado no segundo reload */ } }, PROGRESS_KEY)
   await page.goto('/')
-  await expect(page.getByText('0 / 6 sistemas restaurados')).toBeVisible()
-  await page.addInitScript(() => {
-    Storage.prototype.getItem = () => { throw new Error('bloqueado') }
-    Storage.prototype.setItem = () => { throw new Error('bloqueado') }
-  })
+  await expect(page.getByText('0 / 11 etapas concluídas')).toBeVisible()
+  await page.addInitScript(() => { Storage.prototype.getItem = () => { throw new Error('bloqueado') }; Storage.prototype.setItem = () => { throw new Error('bloqueado') } })
   await page.reload()
   await expect(page.getByText(/O navegador não permite salvar o progresso/)).toBeVisible()
-  await page.getByRole('button', { name: 'Iniciar missão' }).click()
+  await page.getByRole('button', { name: startLabel }).click()
   await page.getByRole('button', { name: 'AND', exact: true }).click()
   await expect(page.getByRole('button', { name: 'Remover porta AND' })).toBeVisible()
 })
 
-test('restaura as seis fases no build de produção, com erros e acertos, sem rede', async ({ page, context }) => {
-  test.setTimeout(60000)
+test('conclui as onze etapas offline, rejeitando soluções incompletas e incorretas', async ({ page, context }) => {
+  test.setTimeout(120000)
   await openEditor(page)
   await context.setOffline(true)
-  const solutions = [
-    { gates: ['AND'], wires: [['Entrada A', 'Porta AND 1 · entrada 1'], ['Entrada B', 'Porta AND 1 · entrada 2'], ['Porta AND 1', 'Saída · entrada 1']] },
-    { gates: ['OR'], wires: [['Entrada A', 'Porta OR 1 · entrada 1'], ['Entrada B', 'Porta OR 1 · entrada 2'], ['Porta OR 1', 'Saída · entrada 1']] },
-    { gates: ['NOT'], wires: [['Entrada A', 'Porta NOT 1 · entrada 1'], ['Porta NOT 1', 'Saída · entrada 1']] },
-    { gates: ['XOR'], wires: [['Entrada A', 'Porta XOR 1 · entrada 1'], ['Entrada B', 'Porta XOR 1 · entrada 2'], ['Porta XOR 1', 'Saída · entrada 1']] },
-    { gates: ['AND', 'NOT', 'OR'], wires: [['Entrada A', 'Porta AND 1 · entrada 1'], ['Entrada B', 'Porta AND 1 · entrada 2'], ['Entrada C', 'Porta NOT 2 · entrada 1'], ['Porta AND 1', 'Porta OR 3 · entrada 1'], ['Porta NOT 2', 'Porta OR 3 · entrada 2'], ['Porta OR 3', 'Saída · entrada 1']] },
-    { gates: ['XOR', 'AND', 'NOT', 'OR'], wires: [['Entrada A', 'Porta XOR 1 · entrada 1'], ['Entrada B', 'Porta XOR 1 · entrada 2'], ['Porta XOR 1', 'Porta AND 2 · entrada 1'], ['Entrada C', 'Porta AND 2 · entrada 2'], ['Entrada D', 'Porta NOT 3 · entrada 1'], ['Porta AND 2', 'Porta OR 4 · entrada 1'], ['Porta NOT 3', 'Porta OR 4 · entrada 2'], ['Porta OR 4', 'Saída · entrada 1']] },
-  ]
-  const counts = [4, 4, 2, 4, 8, 16]
-  for (const [i, solution] of solutions.entries()) {
+  const counts = [4, 4, 2, 4, 8, 16, 8, 8, 16, 16, 16]
+  for (const [i] of solutions.entries()) {
     await page.getByRole('button', { name: 'Testar circuito' }).click()
     await expect(page.getByRole('heading', { name: 'Complete o circuito' })).toBeVisible()
     await connect(page, 'Entrada A', 'Saída · entrada 1')
     await page.getByRole('button', { name: 'Testar circuito' }).click()
     await expect(page.getByRole('heading', { name: 'Ainda falta um ajuste' })).toBeVisible()
     await page.getByRole('button', { name: 'Reiniciar fase' }).click()
-    for (const gate of solution.gates) await page.getByRole('button', { name: gate, exact: true }).click()
-    for (const [source, destination] of solution.wires) await connect(page, source, destination)
-    if (i === 4) await page.screenshot({ path: '/tmp/logicquest-fase-5.png', fullPage: true })
-    await page.getByRole('button', { name: 'Testar circuito' }).click()
+    await solve(page, i)
     await expect(page.getByText(`Seu circuito foi aprovado nas ${counts[i]} combinações possíveis.`)).toBeVisible()
     await page.getByText(`Ver tabela-verdade testada (${counts[i]} combinações)`).click()
     await expect(page.locator('tbody tr')).toHaveCount(counts[i])
-    await expect(page.getByText(`${i + 1} / 6 sistemas restaurados`)).toBeVisible()
-    if (i < 5) await page.getByRole('button', { name: 'Próxima fase' }).click()
+    await expect(page.getByText(`${i + 1} / 11 etapas concluídas`)).toBeVisible()
+    if (i < 10) await page.getByRole('button', { name: 'Próxima fase' }).click()
   }
-  await expect(page.getByRole('heading', { name: 'Laboratório restaurado!' })).toBeVisible()
-  await page.screenshot({ path: '/tmp/logicquest-sucesso-final.png', fullPage: true })
+  await expect(page.getByRole('heading', { name: 'Sua lógica foi mais longe!' })).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Próxima fase' })).toHaveCount(0)
+  await page.screenshot({ path: '/tmp/logicquest-sucesso-final.png' })
 })
 
-test('conecta handles por arraste, move portas e protege nós fixos', async ({ page }) => {
+test('conecta por arraste, move portas e protege os componentes fixos', async ({ page }) => {
   await openEditor(page)
   await page.getByRole('button', { name: 'AND', exact: true }).click()
   const gate = page.getByRole('group', { name: 'Porta AND', exact: true })
-  async function dragHandle(source: ReturnType<Page['locator']>, target: ReturnType<Page['locator']>) {
-    await page.locator('.circuit-canvas').scrollIntoViewIfNeeded()
+  await page.waitForTimeout(350) // Aguarda o enquadramento animado da nova porta.
+  async function drag(source: ReturnType<Page['locator']>, target: ReturnType<Page['locator']>) {
     const a = (await source.boundingBox())!
     const b = (await target.boundingBox())!
     await page.mouse.move(a.x + a.width / 2, a.y + a.height / 2)
@@ -182,16 +193,16 @@ test('conecta handles por arraste, move portas e protege nós fixos', async ({ p
     await page.mouse.move(b.x + b.width / 2, b.y + b.height / 2, { steps: 12 })
     await page.mouse.up()
   }
-  await dragHandle(page.getByTestId('handle-A-out'), gate.locator('[data-handleid="in1"]'))
+  await drag(page.getByTestId('handle-A-out'), gate.locator('[data-handleid="in1"]'))
   await expect(page.locator('.react-flow__edge')).toHaveCount(1)
-  await dragHandle(page.getByTestId('handle-B-out'), gate.locator('[data-handleid="in2"]'))
-  await dragHandle(gate.locator('[data-handleid="out"]'), page.getByTestId('handle-output-in1'))
+  await drag(page.getByTestId('handle-B-out'), gate.locator('[data-handleid="in2"]'))
+  await drag(gate.locator('[data-handleid="out"]'), page.getByTestId('handle-output-in1'))
   await expect(page.getByTestId('output-value')).toHaveText('0')
   const before = await gate.getAttribute('style')
   const box = (await gate.locator('.node-body').boundingBox())!
-  await page.mouse.move(box.x + 25, box.y + 12)
+  await page.mouse.move(box.x + 12, box.y + 10)
   await page.mouse.down()
-  await page.mouse.move(box.x + 90, box.y + 80, { steps: 10 })
+  await page.mouse.move(box.x + 70, box.y + 70, { steps: 10 })
   await page.mouse.up()
   await expect.poll(() => gate.getAttribute('style')).not.toBe(before)
   await page.getByRole('group', { name: 'Entrada A', exact: true }).click()
@@ -202,10 +213,9 @@ test('conecta handles por arraste, move portas e protege nós fixos', async ({ p
   await page.keyboard.press('Delete')
   await expect(gate).toHaveCount(0)
   await expect(page.locator('.react-flow__edge')).toHaveCount(0)
-  await expect(page.getByTestId('output-value')).toHaveText('?')
 })
 
-test('mantém foco na confirmação e restaura o controle ao cancelar', async ({ page }) => {
+test('mantém e restaura o foco na confirmação de reinício', async ({ page }) => {
   await page.goto('/')
   await page.getByRole('button', { name: 'Reiniciar progresso' }).click()
   await expect(page.getByRole('button', { name: 'Cancelar', exact: true })).toBeFocused()
@@ -217,3 +227,87 @@ test('mantém foco na confirmação e restaura o controle ao cancelar', async ({
   await expect(page.getByRole('alertdialog')).toHaveCount(0)
   await expect(page.getByRole('button', { name: 'Reiniciar progresso' })).toBeFocused()
 })
+
+test('fecha as conexões com Escape e ao mover o foco para fora do painel', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' })
+  await openEditor(page)
+  const summary = page.getByText('Conectar por seleção / remover fios')
+  await summary.click()
+  await page.getByLabel('Origem', { exact: true }).focus()
+  await page.keyboard.press('Escape')
+  await expect(summary).toBeFocused()
+  await expect(page.getByLabel('Origem', { exact: true })).not.toBeVisible()
+  await page.keyboard.press('Enter')
+  await page.getByRole('button', { name: 'Testar circuito' }).focus()
+  await expect(page.getByLabel('Origem', { exact: true })).not.toBeVisible()
+  await expect(page.getByRole('button', { name: 'Testar circuito' })).toBeFocused()
+})
+
+test('acomoda quatro tipos de porta nas bancadas estreitas', async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem('logic-quest:progress:v1', JSON.stringify({ version: 1, completed: [1, 2, 3, 4, 5], lastLevel: 6 })))
+  for (const viewport of [{ width: 320, height: 568 }, { width: 768, height: 1024 }, { width: 844, height: 390 }]) {
+    await page.setViewportSize(viewport)
+    await page.goto('/')
+    await page.getByRole('button', { name: 'Continuar aprendizado' }).click()
+    for (const gate of ['AND', 'OR', 'NOT', 'XOR']) await page.getByRole('button', { name: gate, exact: true }).click()
+    const toolbarOverflow = await page.locator('.editor-toolbar').evaluate(element => element.scrollWidth > element.clientWidth + 1)
+    expect(toolbarOverflow).toBe(false)
+    await expectResponsiveFrame(page)
+  }
+})
+
+test('mantém guia e navegação utilizáveis com texto a 200%', async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 568 })
+  await page.goto('/')
+  const navigation = page.getByRole('navigation', { name: 'Navegação principal' })
+  await navigation.getByRole('button', { name: 'Guia de lógica' }).click()
+  await page.getByRole('button', { name: 'Ver conceito 6' }).click()
+  await page.evaluate(() => { document.documentElement.style.fontSize = '200%' })
+  await expectResponsiveFrame(page)
+  for (const name of ['Meu espaço', 'Trilha de aprendizado', 'Guia de lógica']) await expect(navigation.getByRole('button', { name })).toBeInViewport({ ratio: 1 })
+  await page.getByRole('button', { name: 'Próximo conceito' }).scrollIntoViewIfNeeded()
+  await expect(page.getByRole('button', { name: 'Conceito anterior' })).toBeInViewport({ ratio: 1 })
+})
+
+for (const viewport of [{ width: 1440, height: 900 }, { width: 1280, height: 720 }, { width: 768, height: 1024 }, { width: 390, height: 844 }, { width: 360, height: 640 }, { width: 320, height: 568 }]) {
+  test(`mantém navegação e conteúdo responsivos em ${viewport.width} × ${viewport.height}`, async ({ page }) => {
+    await page.setViewportSize(viewport)
+    await page.goto('/')
+    await expectResponsiveFrame(page)
+    await expect(page.getByRole('button', { name: startLabel })).toBeInViewport({ ratio: 1 })
+    await page.getByRole('button', { name: startLabel }).click()
+    await page.getByRole('button', { name: 'Testar circuito' }).scrollIntoViewIfNeeded()
+    await expect(page.getByRole('button', { name: 'Testar circuito' })).toBeInViewport({ ratio: 1 })
+    await expectResponsiveFrame(page)
+    if (viewport.width <= 760) {
+      await page.getByRole('button', { name: 'Entender a missão', exact: true }).click()
+      await expect(page.getByRole('tab', { name: 'Aprender', exact: true })).toBeVisible()
+      await page.getByRole('button', { name: 'Montar circuito', exact: true }).click()
+    }
+    await page.getByRole('button', { name: 'AND', exact: true }).click()
+    await connect(page, 'Entrada A', 'Porta AND 1 · entrada 1')
+    await expect(page.getByRole('status')).toContainText('Fio conectado')
+    await expectResponsiveFrame(page)
+    await closeConnections(page)
+    await page.screenshot({ path: `/tmp/logicquest-editor-${viewport.width}.png` })
+    await page.getByRole('navigation', { name: 'Navegação principal' }).getByRole('button', { name: 'Trilha de aprendizado' }).click()
+    await expectResponsiveFrame(page)
+    await page.getByRole('tab', { name: /Desafios/ }).click()
+    await expectResponsiveFrame(page)
+    if (viewport.width <= 760) {
+      await page.getByRole('button', { name: 'Mais etapas' }).click()
+      await expect(page.getByText('Página 2 de')).toBeVisible()
+    }
+    await page.getByRole('navigation', { name: 'Navegação principal' }).getByRole('button', { name: 'Guia de lógica' }).click()
+    await expectResponsiveFrame(page)
+    await page.getByRole('button', { name: 'Próximo conceito' }).click()
+    await page.getByRole('button', { name: 'Próximo conceito' }).click()
+    await expect(page.getByRole('heading', { name: 'Todas as possibilidades.' })).toBeVisible()
+    if (viewport.width <= 760) await page.getByRole('button', { name: 'Experimentar portas' }).click()
+    await page.getByRole('button', { name: 'XOR', exact: true }).click()
+    await expect(page.locator('.live-output')).toContainText('1')
+    await page.getByRole('button', { name: 'Alternar sinal A' }).click()
+    await expect(page.locator('.live-output')).toContainText('0')
+    await expectResponsiveFrame(page)
+  })
+}

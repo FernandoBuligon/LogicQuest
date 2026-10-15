@@ -1,10 +1,10 @@
 import type { Validation } from '../domain/validation'
 
-export default function ValidationFeedback({ result, inputs }: { result: Validation; inputs: string[] }) {
+export default function ValidationFeedback({ result, inputs, gateLabels = {} }: { result: Validation; inputs: string[]; gateLabels?: Record<string, string> }) {
   return <section className={`validation-panel ${result.status}`} aria-label="Resultado da validação">
     <div role="status">
       <h2>{result.status === 'invalid' ? 'Complete o circuito' : result.status === 'incorrect' ? 'Ainda falta um ajuste' : 'Todas as combinações passaram!'}</h2>
-      {result.status === 'invalid' ? <ul>{result.messages.map(message => <li key={message}>{message}</li>)}</ul> : result.status === 'incorrect' ? <>
+      {result.status === 'invalid' ? <ul>{result.messages.map(message => <li key={message}>{Object.entries(gateLabels).reduce((text, [technical, label]) => text.replaceAll(technical, label), message)}</li>)}</ul> : result.status === 'incorrect' ? <>
         <p>Para {inputs.map(id => `${id} = ${Number(result.mismatch.inputs[id])}`).join(', ')}, a saída calculada foi <strong>{Number(result.mismatch.actual)}</strong>, mas deveria ser <strong>{Number(result.mismatch.expected)}</strong>.</p>
         <p>Confira o caminho dos sinais e o comportamento das portas. Uma única combinação correta não basta.</p>
       </> : <p>Seu circuito foi aprovado nas {result.rows.length} combinações possíveis.</p>}

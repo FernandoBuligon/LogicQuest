@@ -122,6 +122,7 @@ export default function App() {
           <div className="mission-heading">
             <Button variant="ghost" className="phase-back" aria-label="Voltar para a trilha" onClick={() => navigate('levels')}><ChevronLeft aria-hidden="true" size={20} /><span>Fases</span></Button>
             <div className="phase-title"><span className="eyebrow">FASE {String(level.id).padStart(2, '0')} / {levels.length} · {level.module === 'tutorial' ? 'TUTORIAL' : level.module === 'practice' ? 'NA PRÁTICA' : 'DESAFIO'}</span><h1 tabIndex={-1}>{level.name}</h1></div>
+            <p className="phase-objective" aria-label="Objetivo da fase">{level.instruction}</p>
             <Button ref={helpButtonRef} variant="outline" aria-label="Ajuda da fase" aria-haspopup="dialog" onClick={() => setHelp('material')}><CircleHelp aria-hidden="true" size={20} /><span className="help-label">Ajuda</span></Button>
           </div>
           <PhaseHelp key={`help-${level.id}`} level={level} mode={help} onClose={() => { setHelp(null); helpButtonRef.current?.focus() }} />

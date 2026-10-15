@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { Background, Controls, ReactFlow, type Connection, type Edge, type NodeChange, type ReactFlowInstance } from '@xyflow/react'
+import { Background, Controls, ReactFlow, type Connection, type NodeChange, type ReactFlowInstance } from '@xyflow/react'
 import { FlaskConical, Plus, RotateCcw, X } from 'lucide-react'
 import '@xyflow/react/dist/style.css'
 import { Button } from '../components/ui/button'
@@ -8,8 +8,10 @@ import type { Circuit, GateKind, InputHandle, InputValues, Wire } from '../domai
 import { createDraft, makeWire, removeGate, type Draft, type EditorRules } from './model'
 import SignalNode, { type SignalFlowNode } from './SignalNode'
 import GateSymbol from '../components/GateSymbol'
+import WireEdge, { type WireFlowEdge } from './WireEdge'
 
 const nodeTypes = { signal: SignalNode }
+const edgeTypes = { wire: WireEdge }
 
 function createWorkbenchDraft(rules: EditorRules): Draft {
   const draft = createDraft(rules.inputs, rules.maxGates)
@@ -37,7 +39,7 @@ export default function CircuitEditor({ rules, initialDraft, onDraftChange, onTe
   const [selection, setSelection] = useState<{ nodes: string[]; wires: string[] }>({ nodes: [], wires: [] })
   const [measurements, setMeasurements] = useState<Record<string, { width?: number; height?: number }>>({})
   const counter = useRef(initialDraft?.circuit.nodes.filter(node => node.kind === 'gate').length ?? 0)
-  const [flow, setFlow] = useState<ReactFlowInstance<SignalFlowNode, Edge> | null>(null)
+  const [flow, setFlow] = useState<ReactFlowInstance<SignalFlowNode, WireFlowEdge> | null>(null)
   const canvasRef = useRef<HTMLDivElement>(null)
   const connectionsRef = useRef<HTMLDetailsElement>(null)
   const evaluation = evaluateCircuit(draft.circuit, inputs)
@@ -58,6 +60,11 @@ export default function CircuitEditor({ rules, initialDraft, onDraftChange, onTe
     onDraftChange?.(next)
   }
   function remove(id: string) { update(removeGate(draft, id)) }
+  function removeWire(id: string) {
+    update(current => ({ ...current, circuit: { ...current.circuit, wires: current.circuit.wires.filter(wire => wire.id !== id) } }))
+    setSelection(current => ({ ...current, wires: current.wires.filter(wireId => wireId !== id) }))
+    setMessage('Ligação removida.')
+  }
   function addGate(gate: GateKind) {
     if (gates.length >= rules.maxGates) {
       setMessage(`Limite de ${rules.maxGates} portas atingido. Remova uma porta para adicionar outra.`)
@@ -100,9 +107,9 @@ export default function CircuitEditor({ rules, initialDraft, onDraftChange, onTe
     data: { component, signal: evaluation.nodeSignals[component.id], onRemove: remove, onToggle: id => setInputs({ ...inputs, [id]: !inputs[id] }) },
     ariaLabel: component.kind === 'gate' ? `Porta ${component.gate}` : component.kind === 'input' ? `Entrada ${component.label}` : 'Saída do circuito',
   }))
-  const edges: Edge[] = draft.circuit.wires.map(wire => {
+  const edges: WireFlowEdge[] = draft.circuit.wires.map((wire, index) => {
     const signal = evaluation.wireSignals[wire.id]
-    return { ...wire, selected: selection.wires.includes(wire.id), type: 'smoothstep', label: signal === null ? '?' : String(Number(signal)),
+    return { ...wire, selected: selection.wires.includes(wire.id), type: 'wire', data: { number: index + 1, onRemove: () => removeWire(wire.id) }, label: signal === null ? '?' : String(Number(signal)),
       style: { stroke: signal === true ? 'var(--signal)' : 'var(--border-control)', strokeWidth: 2 },
       labelStyle: { fill: 'var(--text)', fontWeight: 600 }, labelBgStyle: { fill: signal === true ? 'var(--signal-soft)' : 'var(--surface-subtle)' },
       ariaLabel: `Fio ${wire.source} para ${wire.target}, sinal ${signal === null ? 'desconhecido' : Number(signal)}`,
@@ -133,13 +140,13 @@ export default function CircuitEditor({ rules, initialDraft, onDraftChange, onTe
       <div className="gate-palette" aria-label="Portas disponíveis">{rules.availableGates.map(gate => <Button key={gate} className={`palette-gate gate-${gate.toLowerCase()}`} variant="outline" disabled={gates.length >= rules.maxGates} onClick={() => addGate(gate)}><GateSymbol gate={gate} size={25} />{gate}<Plus aria-hidden="true" size={12} /></Button>)}</div>
       <span className="gate-count">{gates.length} / {rules.maxGates} portas</span>
     </div>
-    <div ref={canvasRef} className="circuit-canvas">
-      <ReactFlow onInit={setFlow} nodes={nodes} edges={edges} nodeTypes={nodeTypes} onNodesChange={changeNodes}
+    <div ref={canvasRef} className="circuit-canvas" tabIndex={-1}>
+      <ReactFlow onInit={setFlow} nodes={nodes} edges={edges} nodeTypes={nodeTypes} edgeTypes={edgeTypes} onNodesChange={changeNodes}
         ariaLabelConfig={{
           'controls.zoomIn.ariaLabel': 'Aumentar zoom', 'controls.zoomOut.ariaLabel': 'Diminuir zoom',
           'controls.fitView.ariaLabel': 'Enquadrar circuito', 'controls.ariaLabel': 'Controles do circuito',
           'node.a11yDescription.default': 'Pressione Enter para selecionar, use as setas para mover uma porta e Delete para removê-la. Escape cancela a seleção.',
-          'edge.a11yDescription.default': 'Pressione Enter para selecionar o fio, Delete para remover e Escape para cancelar.',
+          'edge.a11yDescription.default': 'Selecione o fio para mostrar o botão Remover. Você também pode usar Delete ou Backspace. Escape cancela a seleção.',
         }}
         onEdgesChange={changes => {
           for (const change of changes) {
@@ -178,7 +185,7 @@ export default function CircuitEditor({ rules, initialDraft, onDraftChange, onTe
         <label>Destino<select name="destination" autoComplete="off" aria-label="Destino" value={safeDestination} onChange={event => setDestination(event.target.value)}>{draft.circuit.nodes.flatMap(node => targetHandles(node).map((handle, i) => <option key={`${node.id}:${handle}`} value={`${node.id}:${handle}`}>{node.kind === 'output' ? 'Saída' : node.kind === 'gate' ? `Porta ${node.gate} ${gates.findIndex(g => g.id === node.id) + 1}` : ''} · entrada {i + 1}</option>))}</select></label>
         <Button variant="outline" type="submit">Conectar fio</Button>
       </form>
-      <ul className="wire-list">{draft.circuit.wires.map((wire, i) => <li key={wire.id}>Fio {i + 1} <Button size="sm" variant="ghost" onClick={() => update({ ...draft, circuit: { ...draft.circuit, wires: draft.circuit.wires.filter(item => item.id !== wire.id) } })} aria-label={`Remover fio ${i + 1}`}>Remover</Button></li>)}</ul>
+      <ul className="wire-list">{draft.circuit.wires.map((wire, i) => <li key={wire.id}>Fio {i + 1} <Button size="sm" variant="ghost" onClick={() => removeWire(wire.id)} aria-label={`Remover fio ${i + 1}`}>Remover</Button></li>)}</ul>
       {draft.circuit.wires.length === 0 && <p>Nenhum fio conectado.</p>}
     </details>
     <div className="editor-actions"><Button variant="ghost" aria-label="Reiniciar fase" onClick={() => { counter.current = 0; update(createWorkbenchDraft(rules)); setMessage('Circuito limpo. Adicione uma porta para começar novamente.') }}><RotateCcw aria-hidden="true" size={16} /><span>Reiniciar fase</span></Button><Button onClick={() => { if (connectionsRef.current) connectionsRef.current.open = false; onTest(draft.circuit) }}><FlaskConical aria-hidden="true" size={18} />Testar circuito</Button></div>

@@ -374,7 +374,7 @@ test('prioriza o canvas e mantém o zoom ao adicionar portas e redimensionar', a
     await expectResponsiveFrame(page)
     await expect(page.getByRole('button', { name: 'Testar circuito' })).toBeInViewport({ ratio: 1 })
     const box = (await canvas.boundingBox())!
-    expect(box.width * box.height / (size.width * size.height)).toBeGreaterThan(0.5)
+    expect(box.width * box.height / (size.width * size.height)).toBeGreaterThan(size.width <= 760 ? 0.4 : 0.5)
     await expect(page.locator('.react-flow__node')).toHaveCount(9)
   }
 })
@@ -404,4 +404,70 @@ test('enquadra entradas e saída no celular e mantém dicas progressivas no desa
   await expect(mission).not.toBeVisible()
   await expect(page.getByRole('table')).toBeVisible()
   await expectResponsiveFrame(page)
+})
+
+
+test.describe('objetivo persistente e remoção direta', () => {
+  test.use({ hasTouch: true })
+  for (const viewport of [{ width: 1440, height: 900 }, { width: 320, height: 568 }]) {
+    test(`remove um fio na bancada em ${viewport.width}px`, async ({ page }) => {
+      await page.setViewportSize(viewport)
+      await openEditor(page)
+      const objective = page.getByLabel('Objetivo da fase', { exact: true })
+      await expect(objective).toHaveText('Ligue a saída somente quando A e B estiverem ligados.')
+      await expect(objective).toBeInViewport({ ratio: 0.99 })
+      await page.getByRole('button', { name: 'AND', exact: true }).click()
+      await connect(page, 'Entrada A', 'Porta AND 1 · entrada 1')
+      await connect(page, 'Entrada B', 'Porta AND 1 · entrada 2')
+      await connect(page, 'Porta AND 1', 'Saída · entrada 1')
+      await closeConnections(page)
+      await expect(page.getByTestId('output-value')).toHaveText('0')
+      await expect(page.getByRole('button', { name: 'Remover ligação 3' })).toHaveCount(0)
+      const point = await page.locator('.react-flow__edge-interaction').last().evaluate((element: SVGPathElement) => {
+        const point = element.getPointAtLength(element.getTotalLength() / 2)
+        const screen = new DOMPoint(point.x, point.y).matrixTransform(element.getScreenCTM()!)
+        return { x: screen.x, y: screen.y }
+      })
+      if (viewport.width <= 760) await page.touchscreen.tap(point.x, point.y)
+      else await page.mouse.click(point.x, point.y)
+      const remove = page.getByRole('button', { name: 'Remover ligação 3', exact: true })
+      await expect(remove).toBeVisible()
+      await expect(remove).toBeInViewport({ ratio: 0.99 })
+      expect(await remove.evaluate(button => {
+        const rect = button.getBoundingClientRect()
+        return [rect.left + 4, rect.right - 4].every(x => [rect.top + 4, rect.bottom - 4].every(y => button.contains(document.elementFromPoint(x, y))))
+      })).toBe(true)
+      await page.screenshot({ path: `/tmp/logicquest-remove-wire-${viewport.width}.png` })
+      if (viewport.width <= 760) await remove.tap()
+      else await remove.click()
+      await expect(page.locator('.react-flow__edge')).toHaveCount(2)
+      await expect(page.getByTestId('output-value')).toHaveText('?')
+      await expect(page.locator('.connection-tools')).not.toHaveAttribute('open', '')
+      await expect(objective).toBeInViewport({ ratio: 0.99 })
+      // The disconnected input can immediately receive a replacement wire.
+      await connect(page, 'Porta AND 1', 'Saída · entrada 1')
+      await closeConnections(page)
+      const edge = page.locator('.react-flow__edge').last()
+      await edge.focus()
+      await page.keyboard.press('Enter')
+      await page.keyboard.press('Delete')
+      await expect(page.locator('.react-flow__edge')).toHaveCount(2)
+      await expectResponsiveFrame(page)
+    })
+  }
+
+  test('mostra o objetivo completo da fase final no celular', async ({ page }) => {
+    await page.setViewportSize({ width: 320, height: 568 })
+    await page.addInitScript(() => localStorage.setItem('logic-quest:progress:v1', JSON.stringify({ version: 1, completed: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], lastLevel: 11 })))
+    await page.goto('/')
+    await page.getByRole('button', { name: 'Continuar aprendizado' }).click()
+    await closeIntro(page)
+    const objective = page.getByLabel('Objetivo da fase', { exact: true })
+    await expect(objective).toContainText('D = 1 sempre impede a rega.')
+    await expect(objective).toBeInViewport({ ratio: 0.99 })
+    expect(await objective.evaluate(element => element.scrollHeight <= element.clientHeight)).toBe(true)
+    await expect(page.getByRole('button', { name: 'Testar circuito' })).toBeInViewport({ ratio: 1 })
+    await expectResponsiveFrame(page)
+    await page.screenshot({ path: '/tmp/logicquest-final-objective-320.png' })
+  })
 })

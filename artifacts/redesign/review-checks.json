@@ -25,7 +25,7 @@
       "height": 900
     },
     "screen": "workbench-area",
-    "canvasShare": 0.741
+    "canvasShare": 0.714
   },
   {
     "viewport": {
@@ -63,6 +63,16 @@
       "height": 900
     },
     "screen": "lesson",
+    "errors": [],
+    "horizontal": false,
+    "mainHorizontal": false
+  },
+  {
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "screen": "wire-selected",
     "errors": [],
     "horizontal": false,
     "mainHorizontal": false
@@ -180,7 +190,7 @@
       "height": 720
     },
     "screen": "workbench-area",
-    "canvasShare": 0.68
+    "canvasShare": 0.647
   },
   {
     "viewport": {
@@ -218,6 +228,16 @@
       "height": 720
     },
     "screen": "lesson",
+    "errors": [],
+    "horizontal": false,
+    "mainHorizontal": false
+  },
+  {
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    },
+    "screen": "wire-selected",
     "errors": [],
     "horizontal": false,
     "mainHorizontal": false
@@ -335,7 +355,7 @@
       "height": 1024
     },
     "screen": "workbench-area",
-    "canvasShare": 0.754
+    "canvasShare": 0.733
   },
   {
     "viewport": {
@@ -373,6 +393,16 @@
       "height": 1024
     },
     "screen": "lesson",
+    "errors": [],
+    "horizontal": false,
+    "mainHorizontal": false
+  },
+  {
+    "viewport": {
+      "width": 768,
+      "height": 1024
+    },
+    "screen": "wire-selected",
     "errors": [],
     "horizontal": false,
     "mainHorizontal": false
@@ -490,7 +520,7 @@
       "height": 844
     },
     "screen": "workbench-area",
-    "canvasShare": 0.678
+    "canvasShare": 0.653
   },
   {
     "viewport": {
@@ -528,6 +558,16 @@
       "height": 844
     },
     "screen": "lesson",
+    "errors": [],
+    "horizontal": false,
+    "mainHorizontal": false
+  },
+  {
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "screen": "wire-selected",
     "errors": [],
     "horizontal": false,
     "mainHorizontal": false
@@ -655,7 +695,7 @@
       "height": 812
     },
     "screen": "workbench-area",
-    "canvasShare": 0.666
+    "canvasShare": 0.64
   },
   {
     "viewport": {
@@ -693,6 +733,16 @@
       "height": 812
     },
     "screen": "lesson",
+    "errors": [],
+    "horizontal": false,
+    "mainHorizontal": false
+  },
+  {
+    "viewport": {
+      "width": 375,
+      "height": 812
+    },
+    "screen": "wire-selected",
     "errors": [],
     "horizontal": false,
     "mainHorizontal": false
@@ -820,7 +870,7 @@
       "height": 568
     },
     "screen": "workbench-area",
-    "canvasShare": 0.537
+    "canvasShare": 0.5
   },
   {
     "viewport": {
@@ -858,6 +908,16 @@
       "height": 568
     },
     "screen": "lesson",
+    "errors": [],
+    "horizontal": false,
+    "mainHorizontal": false
+  },
+  {
+    "viewport": {
+      "width": 320,
+      "height": 568
+    },
+    "screen": "wire-selected",
     "errors": [],
     "horizontal": false,
     "mainHorizontal": false
@@ -1023,6 +1083,16 @@
       "height": 390
     },
     "screen": "lesson",
+    "errors": [],
+    "horizontal": false,
+    "mainHorizontal": false
+  },
+  {
+    "viewport": {
+      "width": 844,
+      "height": 390
+    },
+    "screen": "wire-selected",
     "errors": [],
     "horizontal": false,
     "mainHorizontal": false

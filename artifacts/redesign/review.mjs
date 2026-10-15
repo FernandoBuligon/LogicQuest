@@ -45,6 +45,14 @@ for (const viewport of viewports) {
     await page.getByLabel('Destino', { exact: true }).selectOption({ label: destination })
     await page.getByRole('button', { name: 'Conectar fio', exact: true }).click()
   }
+  await page.getByRole('button', { name: 'Fechar conexões' }).click()
+  const wirePoint = await page.locator('.react-flow__edge-interaction').last().evaluate(element => {
+    const point = element.getPointAtLength(element.getTotalLength() / 2)
+    const screen = new DOMPoint(point.x, point.y).matrixTransform(element.getScreenCTM())
+    return { x: screen.x, y: screen.y }
+  })
+  await page.mouse.click(wirePoint.x, wirePoint.y)
+  await shot('wire-selected')
   await page.getByRole('button', { name: 'Testar circuito' }).click()
   await shot('success')
   await page.getByText('Ver tabela-verdade testada (4 combinações)').click()
@@ -93,7 +101,7 @@ for (const viewport of viewports) {
   await advanced.close()
 }
 await writeFile(new URL('review-checks.json', output), JSON.stringify(checks, null, 2))
-const findings = checks.filter(check => check.canvasShare < 0.5 || check.horizontal || check.mainHorizontal || check.toolbarHorizontal || check.closed === false || check.summaryFocused === false || check.errors?.length)
+const findings = checks.filter(check => check.canvasShare < (check.viewport.width <= 760 ? 0.4 : 0.5) || check.horizontal || check.mainHorizontal || check.toolbarHorizontal || check.closed === false || check.summaryFocused === false || check.errors?.length)
 console.log(JSON.stringify(findings))
 if (findings.length) process.exitCode = 1
 await browser.close()

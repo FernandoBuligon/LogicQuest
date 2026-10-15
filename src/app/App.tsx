@@ -1,20 +1,35 @@
 import { useEffect, useRef, useState } from 'react'
-import { ArrowRight, Check, CircuitBoard, Lock, Play, Trophy } from 'lucide-react'
+import { ArrowRight, BookOpen, Check, ChevronLeft, ChevronRight, CircuitBoard, FlaskConical, Home, Lock, Map, RotateCcw, X } from 'lucide-react'
 import { Button } from '../components/ui/button'
 import CircuitEditor from '../circuit/CircuitEditor'
 import type { Draft } from '../circuit/model'
-import { gateLessons, isUnlocked, levels } from '../levels/levels'
+import { isUnlocked, levels, modules, type Module } from '../levels/levels'
 import { validateSolution, type Validation } from '../domain/validation'
 import ValidationFeedback from '../components/ValidationFeedback'
 import LabIllustration from '../components/LabIllustration'
+import LessonPanel from '../components/LessonPanel'
+import GateExplorer from '../components/GateExplorer'
+import GuideBook from '../components/GuideBook'
 import { initialProgress, loadProgress, saveProgress, type Progress } from '../storage/progress'
 
-type Screen = 'home' | 'levels' | 'game' | 'success'
+type Screen = 'home' | 'levels' | 'game' | 'success' | 'guide'
+const navItems = [
+  { screen: 'home', label: 'Meu espaço', Icon: Home },
+  { screen: 'levels', label: 'Trilha de aprendizado', Icon: Map },
+  { screen: 'guide', label: 'Guia de lógica', Icon: BookOpen },
+] as const
+
 export default function App() {
   const [screen, setScreen] = useState<Screen>('home')
   const [{ progress, available }, setSavedProgress] = useState(loadProgress)
   const activeId = progress.lastLevel
   const completed = progress.completed
+  const [levelPage, setLevelPage] = useState(0)
+  const [compact, setCompact] = useState(() => window.innerWidth <= 760)
+  const [narrow, setNarrow] = useState(() => window.innerWidth <= 370)
+  const [guideMode, setGuideMode] = useState<'concepts' | 'explore'>('concepts')
+  const [module, setModule] = useState<Module>('tutorial')
+  const [mobilePanel, setMobilePanel] = useState<'learn' | 'build'>('build')
   const [confirmReset, setConfirmReset] = useState(false)
   const resetButtonRef = useRef<HTMLButtonElement>(null)
   const resetWasOpen = useRef(false)
@@ -26,58 +41,94 @@ export default function App() {
     if (!confirmReset && resetWasOpen.current) resetButtonRef.current?.focus()
     resetWasOpen.current = confirmReset
   }, [confirmReset])
+  useEffect(() => {
+    const mobile = window.matchMedia('(max-width: 760px)')
+    const small = window.matchMedia('(max-width: 370px)')
+    const resize = () => { setCompact(mobile.matches); setNarrow(small.matches) }
+    mobile.addEventListener('change', resize); small.addEventListener('change', resize)
+    return () => { mobile.removeEventListener('change', resize); small.removeEventListener('change', resize) }
+  }, [])
+  const moduleLevels = levels.filter(item => item.module === module)
+  const perPage = narrow ? 1 : compact ? 2 : 6
+  const pageCount = Math.ceil(moduleLevels.length / perPage)
+  const currentPage = Math.min(levelPage, pageCount - 1)
+  function selectModule(next: Module) { setModule(next); setLevelPage(0) }
   const level = levels.find(item => item.id === activeId)!
+  const nextLevel = levels.find(item => !completed.includes(item.id)) ?? levels[levels.length - 1]
+  const currentModule = modules.find(item => item.id === module)!
+  const gateLabels = Object.fromEntries((drafts[activeId]?.circuit.nodes ?? [])
+    .filter(node => node.kind === 'gate')
+    .map((node, index) => [`Porta ${node.gate} (${node.id})`, `Porta ${node.gate} ${index + 1}`]))
   function updateProgress(next: Progress) {
     setSavedProgress({ progress: next, available: saveProgress(next) })
   }
-  function closeReset() { setConfirmReset(false) }
   function openLevel(id: number) {
     if (!isUnlocked(id, completed)) return
     updateProgress({ ...progress, lastLevel: id })
+    setModule(levels.find(item => item.id === id)!.module)
+    setLevelPage(0)
     setResult(null)
+    setMobilePanel('build')
     setScreen('game')
   }
+  function navigate(next: Screen) { setResult(null); setScreen(next) }
+  const selectedNav = screen === 'game' || screen === 'success' ? 'levels' : screen
   return <div className="app-shell">
     <a href="#main-content" className="skip-link">Pular para o conteúdo</a>
-    <header className="app-header" inert={confirmReset}><button className="brand" onClick={() => setScreen('home')} aria-label="Logic Quest — menu inicial"><CircuitBoard size={28} aria-hidden="true" /><span>Logic Quest<small>O Laboratório de Circuitos</small></span></button><span className="progress-badge">{completed.length} / 6 sistemas restaurados</span></header>
-    <main id="main-content" ref={mainRef} inert={confirmReset}>
-      {!available && <p className="storage-notice" role="status">O navegador não permite salvar o progresso. Você pode jogar nesta sessão; as conquistas podem se perder ao recarregar.</p>}
-      {screen === 'home' && <section className="home-screen">
-        <div className="home-copy">
-        <span className="eyebrow">Laboratório de lógica · missão de restauração</span>
-        <h1 tabIndex={-1}>Logic Quest</h1><p className="home-subtitle">A lógica está nas suas mãos.</p>
-        <p>O laboratório perdeu seus circuitos. Combine portas lógicas, experimente os sinais e restaure seis sistemas — uma descoberta de cada vez.</p>
-        <div className="home-actions"><Button size="lg" onClick={() => openLevel(activeId)}><Play size={18} />{completed.length ? 'Continuar missão' : 'Iniciar missão'}</Button><Button variant="outline" size="lg" onClick={() => setScreen('levels')}>Selecionar fase<ArrowRight size={18} /></Button></div>
-        </div><LabIllustration />
-        <div className="intro-steps"><article><strong>01 · Monte</strong><p>Adicione portas e conecte entradas e saídas.</p></article><article><strong>02 · Experimente</strong><p>Alterne 0 e 1 para acompanhar os sinais.</p></article><article><strong>03 · Verifique</strong><p>Teste todas as combinações e libere a próxima fase.</p></article></div>
-        <div className="progress-settings"><p>As fases concluídas são salvas neste navegador. A montagem atual fica disponível enquanto esta página estiver aberta.</p><Button ref={resetButtonRef} variant="ghost" size="sm" onClick={() => setConfirmReset(true)}>Reiniciar progresso</Button></div>
-      </section>}
-      {screen === 'levels' && <section className="levels-screen"><span className="eyebrow">Mapa do laboratório</span><h1 tabIndex={-1}>Selecione uma fase</h1><p>Restaure os sistemas em sequência. Fases concluídas podem ser revisitadas.</p><div className="level-grid">{levels.map(item => {
-        const done = completed.includes(item.id)
-        const unlocked = isUnlocked(item.id, completed)
-        return <article className={`level-card ${done ? 'complete' : ''}`} key={item.id}><span className="level-number">{String(item.id).padStart(2, '0')}</span><span className="level-state">{done ? <><Check size={16} />Concluída</> : unlocked ? 'Disponível' : <><Lock size={14} />Bloqueada</>}</span><h2>{item.name}</h2><p>{item.context}</p><span className="level-meta">{item.inputs.length} entradas · {item.availableGates.join(' / ')}</span><Button variant={done ? 'outline' : 'default'} disabled={!unlocked} onClick={() => openLevel(item.id)} aria-label={`${done ? 'Revisitar' : 'Jogar'} fase ${item.id}`}>{done ? 'Revisitar' : unlocked ? 'Entrar no sistema' : 'Conclua as fases anteriores'}<ArrowRight size={16} /></Button></article>
-      })}</div><Button variant="ghost" onClick={() => setScreen('home')}>Voltar ao menu</Button></section>}
-      {screen === 'game' && <section className="game-screen"><div className="mission-heading"><span className="eyebrow">Sistema {String(level.id).padStart(2, '0')} / 06</span><h1 tabIndex={-1}>{level.name}</h1><p>{level.context}</p></div>
-        <aside className="mission-brief" aria-label="Instruções da fase"><div><h2>Sua missão</h2><p>{level.instruction}</p><code>{level.objective}</code></div><div><h2>Conheça as portas</h2>{level.availableGates.map(gate => <p key={gate}>{gateLessons[gate]}</p>)}</div></aside>
-        <p className="first-steps">1. Adicione uma porta. 2. Arraste seus pontos para conectar saída → entrada. 3. Alterne os interruptores e teste. Arraste a porta para movê-la; selecione um fio e pressione Delete para removê-lo.</p>
-        <CircuitEditor key={level.id} rules={level} initialDraft={drafts[level.id]} onBack={() => { setResult(null); setScreen('levels') }} onDraftChange={draft => {
-          setDrafts(current => ({ ...current, [level.id]: draft }))
-          setResult(null)
-        }} onTest={circuit => {
-          const validation = validateSolution(circuit, level)
-          setResult(validation)
-          if (validation.status === 'passed') {
-            updateProgress({ ...progress, completed: [...new Set([...completed, level.id])].sort((a, b) => a - b) })
-            setScreen('success')
-          }
-        }} />
-        {result && <ValidationFeedback result={result} inputs={level.inputs} />}
-      </section>}
-      {screen === 'success' && result && <section className="success-screen"><Trophy size={52} aria-hidden="true" /><span className="eyebrow">Sistema {level.id} restaurado</span><h1 tabIndex={-1}>{level.id === 6 ? 'Laboratório restaurado!' : 'Missão cumprida!'}</h1><p>{level.success}</p><ValidationFeedback result={result} inputs={level.inputs} /><div className="home-actions">{level.id < 6 && <Button onClick={() => openLevel(level.id + 1)}>Próxima fase<ArrowRight size={18} /></Button>}<Button variant="outline" onClick={() => setScreen('levels')}>Selecionar fase</Button><Button variant="ghost" onClick={() => openLevel(level.id)}>Revisitar circuito</Button></div></section>}
-    </main>
-    {confirmReset && <div className="dialog-backdrop"><section role="alertdialog" aria-modal="true" aria-labelledby="reset-title" aria-describedby="reset-description" className="confirm-dialog" onKeyDown={event => { if (event.key === 'Escape') closeReset(); if (event.key === 'Tab') { event.preventDefault(); const buttons = [...event.currentTarget.querySelectorAll('button')]; buttons[(buttons.indexOf(document.activeElement as HTMLButtonElement) + (event.shiftKey ? -1 : 1) + buttons.length) % buttons.length].focus() } }}>
-      <h2 id="reset-title">Reiniciar todo o progresso?</h2><p id="reset-description">As fases concluídas e as montagens desta sessão serão apagadas. Para limpar apenas o circuito, use Reiniciar fase no editor.</p><div className="home-actions"><Button autoFocus variant="outline" onClick={closeReset}>Cancelar</Button><Button variant="destructive" onClick={() => { updateProgress(initialProgress()); setDrafts({}); setResult(null); setScreen('home'); closeReset() }}>Apagar progresso</Button></div>
-    </section></div>}
-    <footer inert={confirmReset}>0 é desligado. 1 é ligado. Cada conexão é uma nova descoberta.</footer>
+    <aside className="app-sidebar" inert={confirmReset}>
+      <button className="brand" onClick={() => navigate('home')} aria-label="Logic Quest — menu inicial" translate="no">
+        <span className="brand-mark"><CircuitBoard aria-hidden="true" size={22} /></span><span>logicquest<span className="brand-period">.</span></span>
+      </button>
+      <nav aria-label="Navegação principal">
+        {navItems.map(({ screen: target, label, Icon }) => <button key={target} aria-label={label} className={selectedNav === target ? 'active' : ''} aria-current={selectedNav === target ? 'page' : undefined} onClick={() => navigate(target)}><Icon aria-hidden="true" size={19} /><span>{label}</span></button>)}
+      </nav>
+      <Button ref={resetButtonRef} aria-label="Reiniciar progresso" variant="ghost" size="sm" className="reset-progress" onClick={() => setConfirmReset(true)}><RotateCcw aria-hidden="true" size={16} /><span>Reiniciar progresso</span></Button>
+    </aside>
+    <div className="app-workspace">
+      <header className="app-header" inert={confirmReset}>
+        <span className="header-location">Laboratório de lógica</span>
+        <button className="mobile-brand" translate="no" aria-label="Logic Quest — menu inicial" onClick={() => navigate('home')}>logicquest<span className="brand-period">.</span></button>
+        <div className="header-progress"><span>{completed.length} / {levels.length} etapas concluídas</span><progress max={levels.length} value={completed.length} aria-label="Progresso na trilha" /></div>
+      </header>
+      <main id="main-content" ref={mainRef} inert={confirmReset}>
+        {!available && <p className="storage-notice" role="status">O navegador não permite salvar o progresso. Você pode jogar nesta sessão; as conquistas podem se perder ao recarregar.</p>}
+        {screen === 'home' && <section className="home-screen">
+          <div className="home-hero">
+            <div className="home-copy">
+              <span className="eyebrow">APRENDA EXPERIMENTANDO</span>
+              <h1 tabIndex={-1}>Entenda a lógica.<br /><span className="accent-text">Conecte suas ideias.</span></h1>
+              <p>Descubra como os computadores tomam decisões. Monte circuitos, teste possibilidades e aprenda no seu ritmo.</p>
+              <Button size="lg" onClick={() => openLevel(completed.length ? completed.includes(activeId) ? nextLevel.id : activeId : 1)}>{completed.length ? 'Continuar aprendizado' : 'Começar a aprender'}<ArrowRight aria-hidden="true" size={18} /></Button>
+              <span className="hero-caption">4 tutoriais guiados · 7 etapas para praticar</span>
+            </div>
+            <LabIllustration />
+          </div>
+          <div className="home-next">
+            <div className="next-heading"><h2>{completed.length === levels.length ? 'Explore de novo' : 'Sua próxima etapa'}</h2><button className="text-link" onClick={() => { setModule(nextLevel.module); navigate('levels') }} aria-label="Selecionar fase">Ver trilha<ArrowRight aria-hidden="true" size={16} /></button></div>
+            <div className="next-lesson"><span className="lesson-number">{String(nextLevel.id).padStart(2, '0')}</span><div><h3>{nextLevel.name}</h3><p>{nextLevel.topic}</p></div><Button variant="outline" onClick={() => openLevel(nextLevel.id)} aria-label={`Abrir etapa ${nextLevel.id}`}>Abrir etapa<ArrowRight aria-hidden="true" size={16} /></Button></div>
+          </div>
+          <div className="home-help"><p>Quer revisar os conceitos?</p><button className="text-link" onClick={() => navigate('guide')}>Conhecer o guia<ArrowRight aria-hidden="true" size={16} /></button></div>
+        </section>}
+        {screen === 'levels' && <section className="levels-screen"><div className="page-heading"><div><h1 tabIndex={-1}>Sua trilha de aprendizado</h1><p>Dos primeiros sinais aos seus próprios circuitos.</p></div></div>
+          <div className="module-tabs" role="tablist" aria-label="Módulos da trilha">{modules.map((item, index) => <button key={item.id} id={`module-${item.id}`} role="tab" aria-selected={module === item.id} aria-controls="module-content" tabIndex={module === item.id ? 0 : -1} onClick={() => selectModule(item.id)} onKeyDown={event => { if (['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) { event.preventDefault(); const next = event.key === 'Home' ? 0 : event.key === 'End' ? 2 : (index + (event.key === 'ArrowRight' ? 1 : 2)) % 3; selectModule(modules[next].id); document.getElementById(`module-${modules[next].id}`)?.focus() } }}><span>{item.label}</span><span className="module-count">{completed.filter(id => levels.find(l => l.id === id)?.module === item.id).length}/{levels.filter(l => l.module === item.id).length}</span></button>)}</div>
+          <div className="module-content" id="module-content" role="tabpanel" aria-labelledby={`module-${module}`}><div className="module-description"><h2>{currentModule.name}</h2><p>{currentModule.description}</p></div><div className={`level-grid module-${module}`}>{moduleLevels.slice(currentPage * perPage, (currentPage + 1) * perPage).map(item => {
+            const done = completed.includes(item.id)
+            const unlocked = isUnlocked(item.id, completed)
+            return <article className={`level-card ${done ? 'complete' : ''} ${!unlocked ? 'locked' : ''}`} key={item.id}><div className="level-card-top"><span className="level-number">{String(item.id).padStart(2, '0')}</span><span className="level-state">{done ? <><Check aria-hidden="true" size={13} />Concluída</> : unlocked ? <>Disponível</> : <><Lock aria-hidden="true" size={12} />Bloqueada</>}</span></div><h3>{item.name}</h3><p>{item.topic}</p><span className="level-meta">{item.inputs.length} entradas <span>·</span> Até {item.maxGates} {item.maxGates === 1 ? 'porta' : 'portas'} <span>·</span> {2 ** item.inputs.length} combinações</span><Button variant={done || !unlocked ? 'outline' : 'default'} disabled={!unlocked} onClick={() => openLevel(item.id)} aria-label={`${done ? 'Revisitar' : 'Jogar'} fase ${item.id}`}>{done ? 'Revisitar etapa' : unlocked ? item.module === 'tutorial' ? 'Começar tutorial' : 'Aceitar desafio' : `Conclua a etapa ${item.id - 1}`}{unlocked && <ArrowRight aria-hidden="true" size={15} />}</Button></article>
+          })}</div>{pageCount > 1 && <div className="level-pagination"><Button variant="outline" size="sm" disabled={currentPage === 0} aria-label="Etapas anteriores" onClick={() => setLevelPage(currentPage - 1)}><ChevronLeft aria-hidden="true" size={17} /></Button><span>Página {currentPage + 1} de {pageCount}</span><Button variant="outline" size="sm" disabled={currentPage === pageCount - 1} aria-label="Mais etapas" onClick={() => setLevelPage(currentPage + 1)}><ChevronRight aria-hidden="true" size={17} /></Button></div>}</div>
+        </section>}
+        {screen === 'game' && <section className={`game-screen mobile-${mobilePanel}`}><div className="mission-heading"><div><span className="eyebrow">{level.module === 'tutorial' ? 'TUTORIAL GUIADO' : level.module === 'practice' ? 'NA PRÁTICA' : 'DESAFIO'} <span>· ETAPA {String(level.id).padStart(2, '0')} DE {levels.length}</span></span><h1 tabIndex={-1}>{level.name}</h1><p>{level.topic}</p></div><div className="mission-navigation"><Button size="sm" variant="ghost" disabled={level.id === 1} aria-label="Etapa anterior" onClick={() => openLevel(level.id - 1)}><ChevronLeft aria-hidden="true" size={18} /></Button><span>{level.id}/{levels.length}</span><Button size="sm" variant="ghost" disabled={!isUnlocked(level.id + 1, completed)} aria-label="Etapa seguinte" onClick={() => openLevel(level.id + 1)}><ChevronRight aria-hidden="true" size={18} /></Button></div></div>
+          <div className="mobile-workspace-tabs" role="group" aria-label="Área da etapa"><button aria-pressed={mobilePanel === 'learn'} onClick={() => setMobilePanel('learn')}><BookOpen aria-hidden="true" size={16} />Entender a missão</button><button aria-pressed={mobilePanel === 'build'} onClick={() => setMobilePanel('build')}><CircuitBoard aria-hidden="true" size={16} />Montar circuito</button></div>
+          <div className="game-workspace"><LessonPanel key={`lesson-${level.id}`} level={level} /><div className="workbench"><CircuitEditor key={level.id} rules={level} initialDraft={drafts[level.id]} onBack={() => navigate('levels')} onDraftChange={draft => { setDrafts(current => ({ ...current, [level.id]: draft })); setResult(null) }} onTest={circuit => {
+            const validation = validateSolution(circuit, level)
+            setResult(validation)
+            if (validation.status === 'passed') { updateProgress({ ...progress, completed: [...new Set([...completed, level.id])].sort((a, b) => a - b) }); setScreen('success') }
+          }} />{result && <div className="feedback-overlay"><button className="close-button" aria-label="Fechar resultado" onClick={() => setResult(null)}><X aria-hidden="true" size={17} /></button><ValidationFeedback result={result} inputs={level.inputs} gateLabels={gateLabels} /></div>}</div></div>
+        </section>}
+        {screen === 'success' && result && <section className="success-screen"><div className="success-copy"><span className="success-mark"><Check aria-hidden="true" size={32} /></span><span className="eyebrow">ETAPA {String(level.id).padStart(2, '0')} CONCLUÍDA</span><h1 tabIndex={-1}>{level.id === levels.length ? 'Sua lógica foi mais longe!' : level.id === 4 ? 'Fundamentos conectados!' : 'Conexão feita. Ideia aprendida!'}</h1><p>{level.success}</p><div className="success-takeaway"><BookOpen aria-hidden="true" size={20} /><div><strong>Leve esta ideia com você</strong><p>{level.answer}</p></div></div><div className="home-actions">{level.id < levels.length && <Button onClick={() => openLevel(level.id + 1)}>Próxima fase<ArrowRight aria-hidden="true" size={17} /></Button>}<Button variant="outline" onClick={() => navigate('levels')}>Selecionar fase</Button><Button variant="ghost" onClick={() => openLevel(level.id)}>Revisitar circuito</Button></div></div><div className="success-validation"><ValidationFeedback result={result} inputs={level.inputs} gateLabels={gateLabels} /></div></section>}
+        {screen === 'guide' && <section className={`guide-screen mobile-guide-${guideMode}`}><div className="page-heading"><div><h1 tabIndex={-1}>Lógica faz sentido.</h1><p>Um guia para entender. Um espaço para experimentar.</p></div></div><div className="guide-mobile-tabs" role="group" aria-label="Área do guia"><button aria-pressed={guideMode === 'concepts'} onClick={() => setGuideMode('concepts')}><BookOpen aria-hidden="true" size={15} />Ler conceitos</button><button aria-pressed={guideMode === 'explore'} onClick={() => setGuideMode('explore')}><FlaskConical aria-hidden="true" size={15} />Experimentar portas</button></div><div className="guide-layout"><GuideBook /><div className="guide-playground"><div><h2>O que acontece se…?</h2><p>Escolha uma porta e mude suas entradas.</p></div><GateExplorer /><Button onClick={() => openLevel(activeId)}>Levar para a bancada<ArrowRight aria-hidden="true" size={16} /></Button></div></div></section>}
+      </main>
+    </div>
+    {confirmReset && <div className="dialog-backdrop"><section role="alertdialog" aria-modal="true" aria-labelledby="reset-title" aria-describedby="reset-description" className="confirm-dialog" onKeyDown={event => { if (event.key === 'Escape') setConfirmReset(false); if (event.key === 'Tab') { event.preventDefault(); const buttons = [...event.currentTarget.querySelectorAll('button')]; buttons[(buttons.indexOf(document.activeElement as HTMLButtonElement) + (event.shiftKey ? -1 : 1) + buttons.length) % buttons.length].focus() } }}><h2 id="reset-title">Começar uma nova jornada?</h2><p id="reset-description">As etapas concluídas e as montagens desta sessão serão apagadas. Para limpar apenas o circuito, use Reiniciar fase na bancada.</p><div className="home-actions"><Button autoFocus variant="outline" onClick={() => setConfirmReset(false)}>Cancelar</Button><Button variant="destructive" onClick={() => { updateProgress(initialProgress()); setDrafts({}); setResult(null); setModule('tutorial'); setScreen('home'); setConfirmReset(false) }}>Apagar progresso</Button></div></section></div>}
   </div>
 }
